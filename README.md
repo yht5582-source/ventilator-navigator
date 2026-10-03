@@ -12,7 +12,8 @@
    - ARDSNet 較低／較高 PEEP/FiO₂ 表，依 FiO₂ 標示對應 PEEP。
    - VT／Pplat／pH 調整：Pplat > 30 降 VT 1 mL/kg（最低 4）、VT > 6 逐步下調、pH 7.15–7.30 上調 RR（最高 35，依 Henderson–Hasselbalch 粗估目標 RR）、pH < 7.15 的處置、驅動壓 > 15 提示。
    - 輔助治療階梯（ATS 2017／2024、ESICM 2023）：俯臥、較高 PEEP、肌鬆、類固醇、VV-ECMO（EOLIA 條件）、避免長時間肺泡擴張術與 HFOV。
-3. **阻塞性疾病**：以 RR、VT、流速估算 Ti、Te、I:E 與 auto-PEEP，依序列出降 RR、提高流速、降 VT、治療阻塞；COPD 自行觸發時外加 PEEP 約 auto-PEEP 的 80%；插管後低血壓先斷開管路。
+   - 藥物劑量：dexamethasone（DEXA-ARDS）、methylprednisolone（Meduri）、hydrocortisone（CAPE COD）、COVID-19 dexamethasone（RECOVERY）、cisatracurium（ACURASYS／ROSE）。
+3. **阻塞性疾病**：以 RR、VT、流速估算 Ti、Te、I:E 與 auto-PEEP，依序列出降 RR、提高流速、降 VT、治療阻塞；COPD 自行觸發時外加 PEEP 約 auto-PEEP 的 80%；插管後低血壓先斷開管路。附經呼吸器給藥的支氣管擴張劑、全身性類固醇、magnesium、ketamine 劑量。
 4. **血氣與力學調整**：VT/PBW、MV、P/F、S/F、驅動壓、靜態順應性、氣道阻力、機械功率、通氣比、氧合指數；依目標 PaCO₂ 調 RR，依 SpO₂ 目標調 FiO₂／PEEP。
 5. **疑難排解**：急性去飽和的 DOPE 流程、高氣道壓阻力型與彈性型判讀、七種人機不同步的波形與處置。
 6. **模式與案例**：常用模式比較表，與 10 個案例練習題。

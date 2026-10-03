@@ -138,6 +138,9 @@ hr.soft{border:0;border-top:1px dashed var(--line);margin:14px 0}
 .ptbl div.hd span{font-family:var(--f-body);font-size:12px;text-align:left}
 
 .cmp td:first-child{white-space:nowrap;color:var(--ink-2)}
+.dose td:first-child{font-weight:500;white-space:nowrap}
+.dose td.mono{font-size:13px}
+.dose tr.grp td{background:var(--paper);font-weight:700;font-size:12.5px;color:var(--ink-2);letter-spacing:.04em}
 .adj td:first-child{font-weight:500;white-space:nowrap}
 .adj tr.on td{background:var(--accent-soft)}
 .act{display:grid;gap:8px}
@@ -291,6 +294,23 @@ hr.soft{border:0;border-top:1px dashed var(--line);margin:14px 0}
       <div class="tablebox"><table class="adj"><thead><tr><th>介入</th><th>適用對象與做法</th><th>指引建議</th></tr></thead><tbody id="a-adj"></tbody></table></div>
       <div class="alert info" style="margin-top:12px"><strong>VV-ECMO 轉介條件（EOLIA）</strong><span class="small">已最佳化設定（FiO₂ ≥ 0.8、VT 6 mL/kg、PEEP ≥ 10）後仍符合其一：P/F &lt; 50 超過 3 小時；P/F &lt; 80 超過 6 小時；或 RR 已調到 35 且 Pplat ≤ 32 時，pH &lt; 7.25 合併 PaCO₂ ≥ 60 超過 6 小時。插管通氣超過 7 天者效益不確定。應及早聯絡 ECMO 中心，不要等到符合條件才打電話。</span></div>
     </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>ARDS 藥物劑量</h3>
+      <div class="tablebox"><table class="dose">
+        <thead><tr><th>藥物</th><th>對象</th><th>劑量與療程</th><th>依據</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">全身性類固醇（ATS 2024 有條件建議）</td></tr>
+          <tr><td>Dexamethasone</td><td>中重度 ARDS（P/F ≤ 200，PEEP ≥ 10）</td><td class="mono">20 mg IV qd × 5 天 → 10 mg IV qd × 5 天</td><td>DEXA-ARDS（Villar 2020）</td></tr>
+          <tr><td>Methylprednisolone</td><td>早期 ARDS（≤ 72 小時）</td><td class="mono">1 mg/kg IV 負荷 → 1 mg/kg/天 連續輸注 第 1–14 天 → 0.5 mg/kg/天 第 15–21 天 → 0.25 mg/kg/天 第 22–25 天 → 0.125 mg/kg/天 第 26–28 天</td><td>Meduri 2007</td></tr>
+          <tr><td>Hydrocortisone</td><td>重症社區型肺炎</td><td class="mono">200 mg/天 IV × 4 或 7 天（依臨床改善），之後減量，總療程 8 或 14 天</td><td>CAPE COD（Dequin 2023）</td></tr>
+          <tr><td>Dexamethasone</td><td>COVID-19 需氧氣或呼吸器</td><td class="mono">6 mg IV/PO qd × 10 天（或至出院）</td><td>RECOVERY（2021）</td></tr>
+          <tr class="grp"><td colspan="4">神經肌肉阻斷劑（ATS 2024 有條件建議，早期重度 ARDS）</td></tr>
+          <tr><td>Cisatracurium</td><td>早期（≤ 48 小時）P/F &lt; 150</td><td class="mono">15 mg IV 推注 → 37.5 mg/h 連續輸注 × 48 小時</td><td>ACURASYS（Papazian 2010）、ROSE（2019）</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small muted" style="margin-top:10px">類固醇期間監測血糖、感染與肌無力；Meduri 方案若在第 14 天前拔管，直接跳到第 15 天的劑量繼續減量。肌鬆期間必須維持深鎮靜（RASS −5），並每日評估是否停用；ROSE 試驗中，對照組採淺鎮靜而未使用肌鬆，結果顯示肌鬆沒有降低死亡率，因此不應常規使用。腎功能不全時 cisatracurium 不需調整劑量（Hofmann 降解）。</p>
+    </div>
   </section>
 
   <!-- ============ 3. Obstructive ============ -->
@@ -314,6 +334,25 @@ hr.soft{border:0;border-top:1px dashed var(--line);margin:14px 0}
           <label class="check" style="margin-top:8px"><input type="checkbox" id="o-trig"><span>病人自己觸發，且有無效觸發（呼氣流量曲線上的凹陷沒有帶出一口氣）</span></label>
           <label class="check"><input type="checkbox" id="o-hypo"><span>插管後血壓下降或脈搏消失（PEA）</span></label>
           <div class="tiles" id="o-tiles" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <h3>插管病人的藥物劑量</h3>
+          <div class="tablebox"><table class="dose">
+            <thead><tr><th>藥物</th><th>劑量</th><th>備註</th></tr></thead>
+            <tbody>
+              <tr class="grp"><td colspan="3">支氣管擴張劑（經呼吸器管路）</td></tr>
+              <tr><td>Salbutamol MDI</td><td class="mono">100 mcg/噴，4–8 噴 q20 分 × 3，之後 q1–4h</td><td>以 spacer 接在吸氣端、靠近 Y 接頭，配合吸氣起始按壓</td></tr>
+              <tr><td>Salbutamol 霧化</td><td class="mono">2.5–5 mg q20 分 × 3，之後 q1–4h；或 10–15 mg/h 連續霧化</td><td>霧化器放吸氣端；關閉加熱濕化或依機型調整，注意霧化氣流影響 VT</td></tr>
+              <tr><td>Ipratropium</td><td class="mono">霧化 0.5 mg q20 分 × 3（之後 q4–6h）；或 MDI 20 mcg/噴，4–8 噴</td><td>急性期與 SABA 併用</td></tr>
+              <tr class="grp"><td colspan="3">全身性類固醇</td></tr>
+              <tr><td>COPD 急性惡化</td><td class="mono">Prednisolone 40 mg/天（或 methylprednisolone 40 mg IV/天）× 5 天</td><td>GOLD；療程不需超過 5–7 天</td></tr>
+              <tr><td>重度氣喘</td><td class="mono">Methylprednisolone 40–80 mg IV/天（分 1–2 次）；或 hydrocortisone 100 mg IV q6–8h</td><td>可口服時改 prednisolone 40–50 mg/天，共 5–7 天</td></tr>
+              <tr class="grp"><td colspan="3">重度氣喘的其他藥物</td></tr>
+              <tr><td>Magnesium sulfate</td><td class="mono">2 g IV 輸注 20 分鐘，單次</td><td>對初始治療反應差的重度發作；腎衰竭注意高血鎂</td></tr>
+              <tr><td>Ketamine</td><td class="mono">插管誘導 1–2 mg/kg IV；鎮靜維持 0.5–2 mg/kg/h</td><td>具支氣管擴張作用；注意分泌物增加與血壓、心率上升</td></tr>
+            </tbody>
+          </table></div>
+          <p class="small muted" style="margin-top:10px">霧化或 MDI 給藥後觀察 Ppeak − Pplat 是否下降，作為反應指標。</p>
         </div>
         <div class="card">
           <h3>COPD 與重度氣喘的設定差異</h3>
@@ -463,6 +502,12 @@ hr.soft{border:0;border-top:1px dashed var(--line);margin:14px 0}
           <li>Amato MBP, et al. Driving pressure and survival in ARDS. <i>N Engl J Med</i> 2015;372:747–755. <a href="https://doi.org/10.1056/NEJMsa1410639">doi:10.1056/NEJMsa1410639</a></li>
           <li>Combes A, et al (EOLIA). ECMO for severe ARDS. <i>N Engl J Med</i> 2018;378:1965–1975. <a href="https://doi.org/10.1056/NEJMoa1800385">doi:10.1056/NEJMoa1800385</a></li>
           <li>Writing Group for the PReVENT Investigators. Low vs intermediate tidal volume strategy in ventilated ICU patients without ARDS. <i>JAMA</i> 2018;320:1872–1880. <a href="https://doi.org/10.1001/jama.2018.14280">doi:10.1001/jama.2018.14280</a></li>
+          <li>Villar J, et al (DEXA-ARDS). Dexamethasone treatment for the acute respiratory distress syndrome. <i>Lancet Respir Med</i> 2020;8(3):267–276. <a href="https://doi.org/10.1016/S2213-2600(19)30417-5">doi:10.1016/S2213-2600(19)30417-5</a></li>
+          <li>Meduri GU, et al. Methylprednisolone infusion in early severe ARDS. <i>Chest</i> 2007;131(4):954–963. <a href="https://doi.org/10.1378/chest.06-2100">doi:10.1378/chest.06-2100</a></li>
+          <li>Dequin PF, et al (CAPE COD). Hydrocortisone in severe community-acquired pneumonia. <i>N Engl J Med</i> 2023;388:1931–1941. <a href="https://doi.org/10.1056/NEJMoa2215145">doi:10.1056/NEJMoa2215145</a></li>
+          <li>RECOVERY Collaborative Group. Dexamethasone in hospitalized patients with Covid-19. <i>N Engl J Med</i> 2021;384:693–704. <a href="https://doi.org/10.1056/NEJMoa2021436">doi:10.1056/NEJMoa2021436</a></li>
+          <li>Papazian L, et al (ACURASYS). Neuromuscular blockers in early ARDS. <i>N Engl J Med</i> 2010;363:1107–1116. <a href="https://doi.org/10.1056/NEJMoa1005372">doi:10.1056/NEJMoa1005372</a></li>
+          <li>NHLBI PETAL Network (ROSE). Early neuromuscular blockade in ARDS. <i>N Engl J Med</i> 2019;380:1997–2008. <a href="https://doi.org/10.1056/NEJMoa1901686">doi:10.1056/NEJMoa1901686</a></li>
           <li>Leatherman J. Mechanical ventilation for severe asthma. <i>Chest</i> 2015;147(6):1671–1680. <a href="https://doi.org/10.1378/chest.14-1733">doi:10.1378/chest.14-1733</a></li>
           <li>Gattinoni L, et al. Ventilator-related causes of lung injury: the mechanical power. <i>Intensive Care Med</i> 2016;42:1567–1575. <a href="https://doi.org/10.1007/s00134-016-4505-2">doi:10.1007/s00134-016-4505-2</a></li>
           <li>Sinha P, et al. Physiologic analysis and clinical performance of the ventilatory ratio in ARDS. <i>Am J Respir Crit Care Med</i> 2019;199(3):333–341. <a href="https://doi.org/10.1164/rccm.201804-0692OC">doi:10.1164/rccm.201804-0692OC</a></li>
@@ -845,8 +890,8 @@ const ADJ=[
   {k:'lvt',name:'低潮氣量、限制 Pplat',who:'所有 ARDS：VT 4–8 mL/kg PBW、Pplat < 30',ev:'ATS 2017 強建議；ESICM 2023 強建議',on:()=>true},
   {k:'prone',name:'俯臥通氣',who:'P/F < 150（FiO₂ ≥ 0.6、PEEP ≥ 5）：穩定 12–24 小時內開始，每次 ≥ 16 小時',ev:'ATS 2017 強建議（> 12 h/天，重度）；ESICM 2023 強建議（≥ 16 h，中重度）',on:pf=>pf!=null&&pf<150},
   {k:'peep',name:'較高 PEEP',who:'中重度（P/F ≤ 200）；不併用長時間肺泡擴張術',ev:'ATS 2024 有條件建議；ESICM 2023 無法建議支持或反對',on:pf=>pf!=null&&pf<=200},
-  {k:'nmb',name:'神經肌肉阻斷劑',who:'早期（≤ 48 小時）重度 ARDS，深鎮靜下仍不同步或驅動壓過高時',ev:'ATS 2024 有條件建議（早期重度）；ESICM 2023 不建議常規持續輸注',on:pf=>pf!=null&&pf<=100},
-  {k:'ster',name:'全身性類固醇',who:'ARDS（劑量與療程依試驗，如 dexamethasone 20 mg × 5 天再 10 mg × 5 天）',ev:'ATS 2024 有條件建議',on:pf=>pf!=null&&pf<=300},
+  {k:'nmb',name:'神經肌肉阻斷劑',who:'早期（≤ 48 小時）P/F < 150（試驗收案條件），深鎮靜下仍不同步或驅動壓過高時；cisatracurium 15 mg IV 後 37.5 mg/h × 48 小時（劑量見下表）',ev:'ATS 2024 有條件建議（早期重度）；ESICM 2023 不建議常規持續輸注',on:pf=>pf!=null&&pf<150},
+  {k:'ster',name:'全身性類固醇',who:'ARDS；依病因選擇方案（劑量見下表）',ev:'ATS 2024 有條件建議',on:pf=>pf!=null&&pf<=300},
   {k:'ecmo',name:'VV-ECMO',who:'最佳化後仍符合 EOLIA 條件的重度 ARDS，於 ECMO 中心執行',ev:'ATS 2024 有條件建議；ESICM 2023 建議（EOLIA 條件）',on:pf=>pf!=null&&pf<80},
   {k:'rm',name:'長時間高壓肺泡擴張術',who:'例如 35–40 cmH₂O 持續 ≥ 1 分鐘，或階梯式升壓',ev:'ATS 2024 強烈反對；ESICM 2023 反對',on:()=>false,avoid:true},
   {k:'hfov',name:'高頻震盪通氣（HFOV）',who:'中重度 ARDS 的常規使用',ev:'ATS 2017 強烈反對',on:()=>false,avoid:true},
