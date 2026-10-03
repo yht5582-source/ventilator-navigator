@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="成人侵入性呼吸器設定導航：依病生理情境給起始設定，ARDS 肺保護（2024 全球定義、ARDSNet PEEP/FiO₂ 表、ATS 2024／ESICM 2023 輔助治療），阻塞性疾病 auto-PEEP，血氣與力學調整，疑難排解與模式比較。">
+<title>呼吸器設定導航</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: clinical console — masthead + numbered tabs; decision tabs = inputs (left) + sticky result (right) */
+:root{
+  --paper:#f3f6f6; --panel:#ffffff; --ink:#152224; --ink-2:#47585b; --ink-3:#788a8d; --line:#d3dddd; --line-2:#e6eded;
+  --accent:#17707f; --accent-ink:#ffffff; --accent-soft:#e0f0f2;
+  --go:#2d7a4c; --go-soft:#e2f1e7; --warn:#946708; --warn-soft:#faf0d9; --stop:#b3372b; --stop-soft:#f8e2de;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0e1516; --panel:#162022; --ink:#e3eced; --ink-2:#a2b2b4; --ink-3:#738588; --line:#283537; --line-2:#1e292b;
+  --accent:#6cc3d1; --accent-ink:#082226; --accent-soft:#16313a;
+  --go:#65c48b; --go-soft:#162a1f; --warn:#e4b852; --warn-soft:#2d2612; --stop:#f08a7a; --stop-soft:#381e1a; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0e1516; --panel:#162022; --ink:#e3eced; --ink-2:#a2b2b4; --ink-3:#738588; --line:#283537; --line-2:#1e292b;
+  --accent:#6cc3d1; --accent-ink:#082226; --accent-soft:#16313a;
+  --go:#65c48b; --go-soft:#162a1f; --warn:#e4b852; --warn-soft:#2d2612; --stop:#f08a7a; --stop-soft:#381e1a; color-scheme:dark }
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:1220px;margin:0 auto;padding-inline:20px;padding-block:0 56px}
+@media (max-width:520px){.wrap{padding-inline:16px}}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700;letter-spacing:.01em}
+h1{font-size:clamp(24px,3.2vw,32px);line-height:1.25}
+h3{font-size:16.5px}
+h4{margin:0;font-size:14px;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+.muted{color:var(--ink-2)} .small{font-size:13px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.masthead{padding-block:28px 0;display:grid;gap:8px}
+.masthead .sub{color:var(--ink-2);max-width:80ch}
+.src{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.src span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink-2);background:var(--panel)}
+.tabs{display:flex;gap:4px;margin-top:18px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{appearance:none;border:0;background:none;font:inherit;color:var(--ink-2);padding:10px 14px 11px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;font-weight:500}
+.tab b{font-family:var(--f-mono);font-weight:500;color:var(--ink-3);margin-right:6px;font-size:13px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab[aria-selected="true"] b{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section.pane{padding-top:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+.card>h3{margin-bottom:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stack{display:grid;gap:16px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.field{display:grid;gap:4px;min-width:0}
+.field>label,.flabel{font-size:12.5px;color:var(--ink-2);font-weight:500}
+input[type=number],select{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0;max-width:100%}
+input[type=number]{width:92px;font-family:var(--f-mono)}
+.u{font-size:12px;color:var(--ink-3);font-family:var(--f-mono);white-space:nowrap}
+.inl{display:flex;gap:6px;align-items:center}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer;padding:3px 0}
+.check input{margin-top:5px;accent-color:var(--accent);flex:none}
+.btn{appearance:none;font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:6px 12px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--paper)}
+.seg button{appearance:none;border:0;background:transparent;font:inherit;font-size:13.5px;padding:4px 11px;border-radius:6px;color:var(--ink-2);cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.pill{display:inline-block;font-size:11.5px;font-weight:500;border-radius:999px;padding:1px 9px;white-space:nowrap;vertical-align:1px}
+.pill.ev{background:var(--accent-soft);color:var(--accent)}
+.pill.go{background:var(--go-soft);color:var(--go)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.stop{background:var(--stop-soft);color:var(--stop)}
+.pill.mute{background:var(--line-2);color:var(--ink-2)}
+.sample{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:1px 10px;font-weight:500}
+.note{font-size:13px;color:var(--ink-2);border-left:3px solid var(--line);padding:4px 0 4px 12px}
+.alert{border-radius:8px;padding:10px 12px;font-size:14px;display:grid;gap:4px}
+.alert.warn{background:var(--warn-soft)} .alert.warn strong{color:var(--warn)}
+.alert.stop{background:var(--stop-soft)} .alert.stop strong{color:var(--stop)}
+.alert.go{background:var(--go-soft)} .alert.go strong{color:var(--go)}
+.alert.info{background:var(--accent-soft)} .alert.info strong{color:var(--accent)}
+.alerts{display:grid;gap:8px}
+ul.plain{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+ol.plain{margin:6px 0 0;padding-left:20px;display:grid;gap:5px;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{font-weight:500;color:var(--ink-2);font-size:12.5px;white-space:nowrap}
+.tablebox{overflow-x:auto}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.sticky{position:sticky;top:calc(12px + env(safe-area-inset-top,0px))}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,470px);gap:18px;align-items:start}
+@media (max-width:1020px){.two{grid-template-columns:minmax(0,1fr)}.sticky{position:static}}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.sub-h{font-size:12.5px;color:var(--ink-2);font-weight:500;margin:14px 0 6px}
+.sub-h:first-child{margin-top:0}
+hr.soft{border:0;border-top:1px dashed var(--line);margin:14px 0}
+
+/* patient strip */
+.ptbar{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+.ptbar .k{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.ptbar .pbw{font-family:var(--f-mono);font-size:20px;color:var(--accent);line-height:1}
+.ptbar .pbw small{font-size:12px;color:var(--ink-3)}
+
+/* phenotype picker */
+.pheno{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.pheno{grid-template-columns:minmax(0,1fr)}}
+.pheno button{appearance:none;text-align:left;font:inherit;border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:9px 12px;cursor:pointer;color:var(--ink);display:grid;gap:1px}
+.pheno button small{color:var(--ink-3);font-size:12.5px}
+.pheno button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:var(--accent-soft)}
+
+/* settings result */
+.mode{font-family:var(--f-display);font-size:22px;font-weight:700;color:var(--accent)}
+.set td:first-child{white-space:nowrap;color:var(--ink-2);font-size:13px;width:84px}
+.set td.v{font-family:var(--f-mono);font-size:15px;white-space:nowrap}
+.set td.r{font-size:13px;color:var(--ink-2)}
+
+/* metric tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.tile{border:1px solid var(--line-2);border-radius:8px;padding:8px 11px;background:var(--paper);min-width:0}
+.tile .k{font-size:12px;color:var(--ink-2)}
+.tile .v{font-family:var(--f-mono);font-size:21px;line-height:1.3}
+.tile .v small{font-size:11.5px;color:var(--ink-3);margin-left:3px}
+.tile .s{font-size:11.5px;color:var(--ink-3)}
+.tile.ok{border-color:var(--go)} .tile.ok .v{color:var(--go)}
+.tile.warn{border-color:var(--warn);background:var(--warn-soft)} .tile.warn .v{color:var(--warn)}
+.tile.stop{border-color:var(--stop);background:var(--stop-soft)} .tile.stop .v{color:var(--stop)}
+
+/* peep table */
+.ptbl{display:flex;overflow-x:auto;border:1px solid var(--line-2);border-radius:8px}
+.ptbl div{display:grid;grid-template-rows:auto auto;min-width:44px;text-align:center;font-family:var(--f-mono);font-size:13px;border-right:1px solid var(--line-2)}
+.ptbl div:last-child{border-right:0}
+.ptbl span{padding:4px 6px}
+.ptbl span:first-child{background:var(--paper);color:var(--ink-2)}
+.ptbl div.hit{background:var(--accent-soft)} .ptbl div.hit span{color:var(--accent);font-weight:500}
+.ptbl div.hd span{font-family:var(--f-body);font-size:12px;text-align:left}
+
+.cmp td:first-child{white-space:nowrap;color:var(--ink-2)}
+.adj td:first-child{font-weight:500;white-space:nowrap}
+.adj tr.on td{background:var(--accent-soft)}
+.act{display:grid;gap:8px}
+.act .opt{padding:7px 0 7px 12px;border-left:3px solid var(--line);font-size:14px}
+.opt.first{border-left-color:var(--go)} .opt.alt{border-left-color:var(--accent)} .opt.avoid{border-left-color:var(--stop)} .opt.warn{border-left-color:var(--warn)}
+.opt b{display:block}
+
+/* quiz */
+.quiz .opts{display:grid;gap:6px;margin-top:10px}
+.quiz .opts button{appearance:none;text-align:left;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 12px;cursor:pointer;color:var(--ink)}
+.quiz .opts button.right{border-color:var(--go);background:var(--go-soft)}
+.quiz .opts button.wrong{border-color:var(--stop);background:var(--stop-soft)}
+.qnav{display:flex;gap:6px;flex-wrap:wrap}
+.qnav button{min-width:34px}
+.qnav button[aria-current="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+.refs{padding-left:20px;margin:0;display:grid;gap:8px;font-size:13.8px}
+.refgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.refgrid{grid-template-columns:minmax(0,1fr)}}
+.disclaimer{margin-top:22px;font-size:13px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px;max-width:90ch}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:13.5px;padding:8px 16px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff;font-size:12.5px}
+  .tabs,.noprint,.toast{display:none!important}
+  .card{border-color:#bbb;break-inside:avoid}
+  .two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sticky{position:static}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Adult invasive ventilation · settings, lung protection &amp; troubleshooting</div>
+    <h1>呼吸器設定導航</h1>
+    <p class="sub">先判斷病生理，再選設定。依臨床情境（ARDS、COPD、氣喘、代謝性酸中毒、腦傷等）給成人侵入性呼吸器的起始設定與第一小時檢查。ARDS 頁依 2024 全球定義分級，搭配 ARDSNet PEEP/FiO₂ 表、VT／Pplat／pH 調整流程，以及 ATS 2024、ESICM 2023 的輔助治療建議。其餘分頁處理阻塞性疾病的 auto-PEEP、依血氣與呼吸力學調整設定、急性惡化與人機不同步的排查，最後是模式比較與案例練習。脫離呼吸器請見<a href="https://yht5582-source.github.io/mv-liberation/">呼吸器脫離導航</a>。</p>
+    <div class="src"><span>ATS/ESICM/SCCM 2017</span><span>ATS ARDS Guideline Update 2024</span><span>ESICM ARDS Guidelines 2023</span><span>ARDS Global Definition 2024</span><span>ARDSNet protocol</span></div>
+    <nav class="tabs" role="tablist" aria-label="功能分頁">
+      <button class="tab" role="tab" id="tab-init" aria-controls="init" data-t="init"><b>1</b>起始設定</button>
+      <button class="tab" role="tab" id="tab-ards" aria-controls="ards" data-t="ards"><b>2</b>ARDS 肺保護</button>
+      <button class="tab" role="tab" id="tab-obs" aria-controls="obs" data-t="obs"><b>3</b>阻塞性疾病</button>
+      <button class="tab" role="tab" id="tab-abg" aria-controls="abg" data-t="abg"><b>4</b>血氣與力學調整</button>
+      <button class="tab" role="tab" id="tab-trbl" aria-controls="trbl" data-t="trbl"><b>5</b>疑難排解</button>
+      <button class="tab" role="tab" id="tab-mode" aria-controls="mode" data-t="mode"><b>6</b>模式與案例</button>
+      <button class="tab" role="tab" id="tab-ref" aria-controls="ref" data-t="ref"><b>7</b>文獻</button>
+    </nav>
+  </header>
+
+  <div class="ptbar noprint" id="ptbar">
+    <div class="inl"><span class="k">生理性別</span><div class="seg" id="p-sex"><button data-v="m">男</button><button data-v="f">女</button></div></div>
+    <div class="inl"><span class="k">身高</span><input type="number" id="p-ht" min="120" max="230" step="1"><span class="u">cm</span></div>
+    <div class="inl"><span class="k">PBW</span><span class="pbw" id="p-pbw">—</span></div>
+    <div class="inl"><span class="k">VT 6／8 mL/kg</span><span class="mono" id="p-vt">—</span></div>
+    <span class="small muted">潮氣量一律以預測體重（PBW）計算，不用實際體重。</span>
+  </div>
+
+  <!-- ============ 1. Initial settings ============ -->
+  <section class="pane" id="init" role="tabpanel" aria-labelledby="tab-init" hidden>
+    <div class="two">
+      <div class="stack">
+        <div class="card">
+          <h3>臨床情境 <span class="sample" id="i-sample">示例</span></h3>
+          <p class="small muted" style="margin-bottom:10px">選擇主要的病生理問題。若兩者並存（例如 COPD 合併 ARDS），以較需保護的肺（ARDS）為主，再套用另一情境的注意事項。</p>
+          <div class="pheno" id="i-pheno"></div>
+          <div class="row" style="margin-top:12px" id="i-extra">
+            <div class="field" id="i-hco3w"><label for="i-hco3">HCO₃⁻</label><div class="inl"><input type="number" id="i-hco3" step="0.1"><span class="u">mmol/L</span></div></div>
+            <div class="field" id="i-basew"><label for="i-base">平常（穩定期）PaCO₂</label><div class="inl"><input type="number" id="i-base" step="1"><span class="u">mmHg</span></div></div>
+          </div>
+          <label class="check" style="margin-top:8px"><input type="checkbox" id="i-shock"><span>休克／血流動力學不穩定（需升壓劑或 MAP &lt; 65）</span></label>
+        </div>
+        <div class="card">
+          <h3>設定前先確認</h3>
+          <ul class="plain">
+            <li>管路位置：ETCO₂ 波形、雙側呼吸音、CXR 管尖在隆突上 3–5 cm。</li>
+            <li>插管當下的血流動力學：正壓通氣會減少靜脈回流，低血容、右心衰竭與 auto-PEEP 的病人最容易掉血壓。</li>
+            <li>插管前病人自己的分鐘通氣量。代謝性酸中毒的病人若設定 MV 低於原本的代償，pH 會在幾分鐘內崩落。</li>
+            <li>鎮靜深度與是否使用肌肉鬆弛劑，這決定病人能不能自己觸發、會不會出現不同步。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>建模式時的三個問題</h3>
+          <ol class="plain">
+            <li><b>需要全支持還是部分支持？</b>沒有可靠自主呼吸、深鎮靜或肌鬆，用 A/C（VC 或 PC）；自主呼吸穩定且支持需求低才考慮 PSV。</li>
+            <li><b>要保證容積還是限制壓力？</b>VC 保證 VT 與分鐘通氣，但壓力隨力學變；PC 限制吸氣壓，但 VT 隨順應性與病人用力變。兩者在肺保護上沒有證據顯示誰較好，關鍵是監測 VT/PBW、Pplat 與驅動壓。</li>
+            <li><b>主要問題是氧合還是通氣？</b>氧合靠 FiO₂ 與平均氣道壓（PEEP、吸氣時間）；CO₂ 靠分鐘通氣（RR × VT）與死腔。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="stack sticky">
+        <div class="card" id="i-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. ARDS ============ -->
+  <section class="pane" id="ards" role="tabpanel" aria-labelledby="tab-ards" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h3>ARDS 定義與嚴重度 <span class="sample" id="a-sample">示例</span></h3>
+        <div class="row">
+          <div class="field"><span class="flabel">呼吸支持</span><div class="seg" id="a-set"><button data-v="inv">插管</button><button data-v="non">HFNC／NIV</button></div></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div class="field"><label for="a-pao2">PaO₂</label><div class="inl"><input type="number" id="a-pao2"><span class="u">mmHg</span></div></div>
+          <div class="field"><label for="a-fio2">FiO₂</label><div class="inl"><input type="number" id="a-fio2" step="0.05" min="0.21" max="1"><span class="u">0.21–1</span></div></div>
+          <div class="field"><label for="a-spo2">SpO₂</label><div class="inl"><input type="number" id="a-spo2"><span class="u">%</span></div></div>
+          <div class="field" id="a-peepw"><label for="a-peep">PEEP</label><div class="inl"><input type="number" id="a-peep"><span class="u">cmH₂O</span></div></div>
+          <div class="field" id="a-supw"><label for="a-sup">非插管支持</label><select id="a-sup"><option value="hfnc">HFNC ≥ 30 L/min</option><option value="niv">NIV／CPAP，EPAP ≥ 5</option><option value="none">未達上述（一般氧氣）</option></select></div>
+        </div>
+        <div class="sub-h" style="margin-top:12px">其他條件</div>
+        <label class="check"><input type="checkbox" id="a-c1"><span>已知誘因後 1 週內發生，或 1 週內新出現／惡化的呼吸症狀</span></label>
+        <label class="check"><input type="checkbox" id="a-c2"><span>雙側浸潤（CXR、CT 或肺超音波），無法完全以積液、肺塌陷或結節解釋</span></label>
+        <label class="check"><input type="checkbox" id="a-c3"><span>呼吸衰竭不能完全以心衰竭或體液過多解釋（必要時以心臟超音波排除）</span></label>
+        <div id="a-def" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <h3>PEEP／FiO₂ 對照表（ARDSNet）</h3>
+        <div class="row">
+          <div class="seg" id="a-tbl"><button data-v="lower">較低 PEEP 表</button><button data-v="higher">較高 PEEP 表</button></div>
+          <span class="small muted">以左側 FiO₂ 標示對應列</span>
+        </div>
+        <div class="ptbl" id="a-ptbl" style="margin-top:10px"></div>
+        <div id="a-peepout" style="margin-top:10px"></div>
+        <p class="note" style="margin-top:10px">ATS 2024 對中重度 ARDS 有條件建議用較高 PEEP，且不做長時間肺泡擴張術；ESICM 2023 則認為證據不足，不建議支持或反對。不論哪一張表，都要看 PEEP 上調後順應性、驅動壓與血壓的反應：氧合改善且驅動壓下降代表肺可擴張，若 Pplat 上升、驅動壓變大或血壓下降，就是過度膨脹或影響循環。</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>VT／Pplat／pH 調整（ARDSNet 流程）</h3>
+      <div class="two" style="grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)">
+        <div>
+          <div class="row">
+            <div class="field"><label for="n-vt">VT</label><div class="inl"><input type="number" id="n-vt"><span class="u">mL</span></div></div>
+            <div class="field"><label for="n-pplat">Pplat</label><div class="inl"><input type="number" id="n-pplat"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="n-peep">PEEP</label><div class="inl"><input type="number" id="n-peep"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="n-rr">RR</label><div class="inl"><input type="number" id="n-rr"><span class="u">/min</span></div></div>
+            <div class="field"><label for="n-ph">pH</label><div class="inl"><input type="number" id="n-ph" step="0.01"></div></div>
+            <div class="field"><label for="n-paco2">PaCO₂</label><div class="inl"><input type="number" id="n-paco2"><span class="u">mmHg</span></div></div>
+          </div>
+          <div class="tiles" id="n-tiles" style="margin-top:12px"></div>
+          <p class="small muted" style="margin-top:10px">目標：VT 6 mL/kg PBW（容許 4–8）、Pplat ≤ 30、pH 7.30–7.45、SpO₂ 88–95%（PaO₂ 55–80）、RR ≤ 35。Pplat 以吸氣末暫停 0.5 s 量測。</p>
+        </div>
+        <div class="act" id="n-act"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>輔助治療階梯 <span class="small muted" style="font-family:var(--f-body);font-weight:400">依上方 P/F 標示目前適用項目</span></h3>
+      <div class="tablebox"><table class="adj"><thead><tr><th>介入</th><th>適用對象與做法</th><th>指引建議</th></tr></thead><tbody id="a-adj"></tbody></table></div>
+      <div class="alert info" style="margin-top:12px"><strong>VV-ECMO 轉介條件（EOLIA）</strong><span class="small">已最佳化設定（FiO₂ ≥ 0.8、VT 6 mL/kg、PEEP ≥ 10）後仍符合其一：P/F &lt; 50 超過 3 小時；P/F &lt; 80 超過 6 小時；或 RR 已調到 35 且 Pplat ≤ 32 時，pH &lt; 7.25 合併 PaCO₂ ≥ 60 超過 6 小時。插管通氣超過 7 天者效益不確定。應及早聯絡 ECMO 中心，不要等到符合條件才打電話。</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 3. Obstructive ============ -->
+  <section class="pane" id="obs" role="tabpanel" aria-labelledby="tab-obs" hidden>
+    <div class="two">
+      <div class="stack">
+        <div class="card">
+          <h3>呼氣時間與 auto-PEEP <span class="sample" id="o-sample">示例</span></h3>
+          <div class="row"><div class="seg" id="o-kind"><button data-v="copd">COPD 急性惡化</button><button data-v="asthma">重度氣喘</button></div></div>
+          <div class="row" style="margin-top:10px">
+            <div class="field"><label for="o-rr">RR（實際）</label><div class="inl"><input type="number" id="o-rr"><span class="u">/min</span></div></div>
+            <div class="field"><label for="o-vt">VT</label><div class="inl"><input type="number" id="o-vt"><span class="u">mL</span></div></div>
+            <div class="field"><label for="o-flow">吸氣流速（方波）</label><div class="inl"><input type="number" id="o-flow"><span class="u">L/min</span></div></div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="field"><label for="o-peep">設定 PEEP</label><div class="inl"><input type="number" id="o-peep"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="o-tpeep">Total PEEP（呼氣末暫停）</label><div class="inl"><input type="number" id="o-tpeep"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="o-ppeak">Ppeak</label><div class="inl"><input type="number" id="o-ppeak"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="o-pplat">Pplat</label><div class="inl"><input type="number" id="o-pplat"><span class="u">cmH₂O</span></div></div>
+          </div>
+          <label class="check" style="margin-top:8px"><input type="checkbox" id="o-trig"><span>病人自己觸發，且有無效觸發（呼氣流量曲線上的凹陷沒有帶出一口氣）</span></label>
+          <label class="check"><input type="checkbox" id="o-hypo"><span>插管後血壓下降或脈搏消失（PEA）</span></label>
+          <div class="tiles" id="o-tiles" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <h3>COPD 與重度氣喘的設定差異</h3>
+          <div class="tablebox"><table class="cmp">
+            <thead><tr><th>項目</th><th>COPD 急性惡化</th><th>重度氣喘</th></tr></thead>
+            <tbody>
+              <tr><td>VT</td><td>6–8 mL/kg PBW</td><td>6–8 mL/kg PBW（偏低）</td></tr>
+              <tr><td>RR</td><td>10–14</td><td>8–12</td></tr>
+              <tr><td>吸氣流速</td><td>60–80 L/min</td><td>80–100 L/min</td></tr>
+              <tr><td>I:E</td><td>≥ 1:3</td><td>≥ 1:4</td></tr>
+              <tr><td>外加 PEEP</td><td>被動通氣時 5；自行觸發且有無效觸發，可設約 auto-PEEP 的 80%</td><td>被動通氣時 0–5；不以外加 PEEP 抵銷 auto-PEEP</td></tr>
+              <tr><td>SpO₂ 目標</td><td>88–92%</td><td>93–95%</td></tr>
+              <tr><td>CO₂ 目標</td><td>以 pH 為準，回到病人平常的 PaCO₂，不要矯正到 40</td><td>容許高碳酸血症，pH ≥ 7.20 即可</td></tr>
+              <tr><td>壓力上限</td><td>Pplat ≤ 30</td><td>Pplat &lt; 30、auto-PEEP &lt; 10–15</td></tr>
+            </tbody>
+          </table></div>
+          <p class="note" style="margin-top:10px">COPD 急性惡化合併呼吸性酸中毒（pH ≤ 7.35）且無禁忌時，應先嘗試 NIV（ERS/ATS 2017 強建議）。慢性高碳酸血症的病人若把 PaCO₂ 快速降到正常，腎臟保留的 HCO₃⁻ 會造成代謝性鹼中毒，之後更難脫離。</p>
+        </div>
+      </div>
+      <div class="stack sticky">
+        <div class="card" id="o-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. ABG & mechanics ============ -->
+  <section class="pane" id="abg" role="tabpanel" aria-labelledby="tab-abg" hidden>
+    <div class="two">
+      <div class="stack">
+        <div class="card">
+          <h3>目前設定與血氣 <span class="sample" id="g-sample">示例</span></h3>
+          <div class="sub-h">通氣</div>
+          <div class="row">
+            <div class="field"><label for="g-rr">RR（實際）</label><div class="inl"><input type="number" id="g-rr"><span class="u">/min</span></div></div>
+            <div class="field"><label for="g-vt">VT</label><div class="inl"><input type="number" id="g-vt"><span class="u">mL</span></div></div>
+            <div class="field"><label for="g-mv">實測 MV（選填）</label><div class="inl"><input type="number" id="g-mv" step="0.1"><span class="u">L/min</span></div></div>
+          </div>
+          <div class="sub-h">血氣</div>
+          <div class="row">
+            <div class="field"><label for="g-ph">pH</label><input type="number" id="g-ph" step="0.01"></div>
+            <div class="field"><label for="g-paco2">PaCO₂</label><div class="inl"><input type="number" id="g-paco2"><span class="u">mmHg</span></div></div>
+            <div class="field"><label for="g-tgt">目標 PaCO₂</label><div class="inl"><input type="number" id="g-tgt"><span class="u">mmHg</span></div></div>
+            <div class="field"><label for="g-pao2">PaO₂</label><div class="inl"><input type="number" id="g-pao2"><span class="u">mmHg</span></div></div>
+            <div class="field"><label for="g-fio2">FiO₂</label><input type="number" id="g-fio2" step="0.05"></div>
+            <div class="field"><label for="g-spo2">SpO₂</label><div class="inl"><input type="number" id="g-spo2"><span class="u">%</span></div></div>
+          </div>
+          <div class="sub-h">壓力</div>
+          <div class="row">
+            <div class="field"><label for="g-ppeak">Ppeak</label><div class="inl"><input type="number" id="g-ppeak"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="g-pplat">Pplat</label><div class="inl"><input type="number" id="g-pplat"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="g-peep">PEEP</label><div class="inl"><input type="number" id="g-peep"><span class="u">cmH₂O</span></div></div>
+            <div class="field"><label for="g-flow">流速（VC 方波）</label><div class="inl"><input type="number" id="g-flow"><span class="u">L/min</span></div></div>
+            <div class="field"><label for="g-mpaw">平均氣道壓</label><div class="inl"><input type="number" id="g-mpaw"><span class="u">cmH₂O</span></div></div>
+          </div>
+          <div class="row" style="margin-top:10px"><div class="field"><span class="flabel">SpO₂ 目標</span><div class="seg" id="g-otgt"><button data-v="std">92–96%</button><button data-v="ards">88–95%（ARDS）</button><button data-v="copd">88–92%（CO₂ 滯留）</button></div></div></div>
+        </div>
+        <div class="card">
+          <h3>計算指標</h3>
+          <div class="tiles" id="g-tiles"></div>
+          <p class="small muted" style="margin-top:10px">機械功率用 Gattinoni 的 VC 簡化式：0.098 × RR × VT(L) × (Ppeak − ½ΔP)，觀察性研究顯示超過約 17 J/min 與死亡率相關，但沒有前瞻性試驗驗證為目標值。通氣比（VR）= MV × PaCO₂ ÷（PBW × 100 × 37.5），正常約 1，上升代表死腔增加。</p>
+        </div>
+      </div>
+      <div class="stack sticky">
+        <div class="card" id="g-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. Troubleshooting ============ -->
+  <section class="pane" id="trbl" role="tabpanel" aria-labelledby="tab-trbl" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h3>突然去飽和或血壓下降</h3>
+        <div class="alert stop"><strong>第一步：脫離呼吸器，用 Ambu 接 100% 氧氣手壓</strong><span class="small">手壓變好，問題在呼吸器或管路；手壓仍難壓或沒改善，問題在病人或氣管內管。手壓時放慢速度，給 auto-PEEP 的病人時間吐氣。</span></div>
+        <div class="tablebox" style="margin-top:10px"><table>
+          <thead><tr><th>DOPE</th><th>查什麼</th><th>處置</th></tr></thead>
+          <tbody>
+            <tr><td><b>D</b>isplacement</td><td>ETCO₂ 波形消失或下降、管路刻度改變、單側呼吸音</td><td>確認深度；滑脫則重新插管，主支氣管插管則後退</td></tr>
+            <tr><td><b>O</b>bstruction</td><td>抽痰管放不下去、咬管、扭折、分泌物或血塊</td><td>抽痰、牙咬器；完全阻塞時換管</td></tr>
+            <tr><td><b>P</b>neumothorax</td><td>單側呼吸音消失、氣管偏移、Pplat 急升、低血壓；肺超音波失去 lung sliding</td><td>張力性氣胸先針刺減壓，再放胸管</td></tr>
+            <tr><td><b>E</b>quipment</td><td>呼吸器故障、管路脫落或漏氣、氧氣源</td><td>手壓同時請呼吸治療師檢查機器</td></tr>
+            <tr><td>Stacking</td><td>auto-PEEP（尤其 COPD、氣喘）造成低血壓</td><td>斷開管路 30–60 秒讓肺排氣，再降 RR</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small muted" style="margin-top:8px">排除以上後，再考慮肺栓塞、黏液栓塞造成的肺塌陷、肺水腫惡化、吸入、心因性休克與腹內壓上升。</p>
+      </div>
+      <div class="card">
+        <h3>高氣道壓判讀 <span class="sample" id="t-sample">示例</span></h3>
+        <div class="row">
+          <div class="field"><label for="t-ppeak">Ppeak</label><div class="inl"><input type="number" id="t-ppeak"><span class="u">cmH₂O</span></div></div>
+          <div class="field"><label for="t-pplat">Pplat</label><div class="inl"><input type="number" id="t-pplat"><span class="u">cmH₂O</span></div></div>
+          <div class="field"><label for="t-peep">PEEP</label><div class="inl"><input type="number" id="t-peep"><span class="u">cmH₂O</span></div></div>
+          <div class="field"><label for="t-tpeep">Total PEEP</label><div class="inl"><input type="number" id="t-tpeep"><span class="u">cmH₂O</span></div></div>
+        </div>
+        <div id="t-out" style="margin-top:12px"></div>
+        <p class="note" style="margin-top:10px">Ppeak − Pplat 反映氣道阻力（流速 60 L/min 時正常約 &lt; 10）；Pplat − PEEP（驅動壓）反映呼吸系統順應性。只看到 Ppeak 高就把 VC 改成 PC，並不會讓肺泡壓變低，只是把警報藏起來。</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>人機不同步</h3>
+      <div class="tablebox"><table>
+        <thead><tr><th>類型</th><th>波形線索</th><th>常見原因</th><th>處置</th></tr></thead>
+        <tbody id="t-asyn"></tbody>
+      </table></div>
+      <p class="small muted" style="margin-top:8px">不同步指數超過 10% 的病人 ICU 死亡率較高（Blanch 2015），但因果未定。先找原因（疼痛、焦慮、酸血症、發燒、auto-PEEP、設定不符），不要第一步就加深鎮靜或加肌鬆。</p>
+    </div>
+  </section>
+
+  <!-- ============ 6. Modes & cases ============ -->
+  <section class="pane" id="mode" role="tabpanel" aria-labelledby="tab-mode" hidden>
+    <div class="card">
+      <h3>常用模式比較</h3>
+      <div class="tablebox"><table>
+        <thead><tr><th>模式</th><th>控制什麼</th><th>保證</th><th>自主呼吸</th><th>適合</th><th>注意</th></tr></thead>
+        <tbody id="m-tbl"></tbody>
+      </table></div>
+      <p class="small muted" style="margin-top:8px">各廠牌名稱不同（如 PRVC、VC+、Autoflow、APV）；自適應模式的演算法也不同，病人用力時可能自動降低支持，反而增加呼吸功。</p>
+    </div>
+    <div class="card quiz" style="margin-top:16px">
+      <h3>案例練習</h3>
+      <div class="qnav" id="q-nav"></div>
+      <div id="q-body" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- ============ 7. References ============ -->
+  <section class="pane" id="ref" role="tabpanel" aria-labelledby="tab-ref" hidden>
+    <div class="refgrid">
+      <div class="card">
+        <h3>指引與定義</h3>
+        <ol class="refs">
+          <li>Fan E, et al. An Official ATS/ESICM/SCCM Clinical Practice Guideline: Mechanical Ventilation in Adult Patients with ARDS. <i>Am J Respir Crit Care Med</i> 2017;195:1253–1263. <a href="https://doi.org/10.1164/rccm.201703-0548ST">doi:10.1164/rccm.201703-0548ST</a></li>
+          <li>Qadir N, et al. An Update on Management of Adult Patients with ARDS: An Official ATS Clinical Practice Guideline. <i>Am J Respir Crit Care Med</i> 2024;209(1):24–36. <a href="https://doi.org/10.1164/rccm.202311-2011ST">doi:10.1164/rccm.202311-2011ST</a></li>
+          <li>Grasselli G, et al. ESICM guidelines on acute respiratory distress syndrome: definition, phenotyping and respiratory support strategies. <i>Intensive Care Med</i> 2023;49(7):727–759. <a href="https://doi.org/10.1007/s00134-023-07050-7">doi:10.1007/s00134-023-07050-7</a></li>
+          <li>Matthay MA, et al. A New Global Definition of Acute Respiratory Distress Syndrome. <i>Am J Respir Crit Care Med</i> 2024;209(1):37–47. <a href="https://doi.org/10.1164/rccm.202303-0558WS">doi:10.1164/rccm.202303-0558WS</a></li>
+          <li>Rochwerg B, et al. Official ERS/ATS clinical practice guidelines: noninvasive ventilation for acute respiratory failure. <i>Eur Respir J</i> 2017;50:1602426. <a href="https://doi.org/10.1183/13993003.02426-2016">doi:10.1183/13993003.02426-2016</a></li>
+          <li>NHLBI ARDS Network. Mechanical ventilation protocol summary（PEEP/FiO₂ 表與 VT、Pplat、pH 調整規則）. <a href="http://www.ardsnet.org/files/ventilator_protocol_2008-07.pdf">ardsnet.org</a></li>
+          <li>Carney N, et al. Guidelines for the Management of Severe Traumatic Brain Injury, Fourth Edition. <i>Neurosurgery</i> 2017;80(1):6–15. <a href="https://doi.org/10.1227/NEU.0000000000001432">doi:10.1227/NEU.0000000000001432</a></li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>關鍵試驗與生理</h3>
+        <ol class="refs">
+          <li>ARDS Network. Ventilation with lower tidal volumes as compared with traditional tidal volumes for ALI and ARDS. <i>N Engl J Med</i> 2000;342:1301–1308. <a href="https://doi.org/10.1056/NEJM200005043421801">doi:10.1056/NEJM200005043421801</a></li>
+          <li>Brower RG, et al (ALVEOLI). Higher versus lower PEEP in patients with ARDS. <i>N Engl J Med</i> 2004;351:327–336. <a href="https://doi.org/10.1056/NEJMoa032193">doi:10.1056/NEJMoa032193</a></li>
+          <li>Guérin C, et al (PROSEVA). Prone positioning in severe ARDS. <i>N Engl J Med</i> 2013;368:2159–2168. <a href="https://doi.org/10.1056/NEJMoa1214103">doi:10.1056/NEJMoa1214103</a></li>
+          <li>Amato MBP, et al. Driving pressure and survival in ARDS. <i>N Engl J Med</i> 2015;372:747–755. <a href="https://doi.org/10.1056/NEJMsa1410639">doi:10.1056/NEJMsa1410639</a></li>
+          <li>Combes A, et al (EOLIA). ECMO for severe ARDS. <i>N Engl J Med</i> 2018;378:1965–1975. <a href="https://doi.org/10.1056/NEJMoa1800385">doi:10.1056/NEJMoa1800385</a></li>
+          <li>Writing Group for the PReVENT Investigators. Low vs intermediate tidal volume strategy in ventilated ICU patients without ARDS. <i>JAMA</i> 2018;320:1872–1880. <a href="https://doi.org/10.1001/jama.2018.14280">doi:10.1001/jama.2018.14280</a></li>
+          <li>Leatherman J. Mechanical ventilation for severe asthma. <i>Chest</i> 2015;147(6):1671–1680. <a href="https://doi.org/10.1378/chest.14-1733">doi:10.1378/chest.14-1733</a></li>
+          <li>Gattinoni L, et al. Ventilator-related causes of lung injury: the mechanical power. <i>Intensive Care Med</i> 2016;42:1567–1575. <a href="https://doi.org/10.1007/s00134-016-4505-2">doi:10.1007/s00134-016-4505-2</a></li>
+          <li>Sinha P, et al. Physiologic analysis and clinical performance of the ventilatory ratio in ARDS. <i>Am J Respir Crit Care Med</i> 2019;199(3):333–341. <a href="https://doi.org/10.1164/rccm.201804-0692OC">doi:10.1164/rccm.201804-0692OC</a></li>
+          <li>Blanch L, et al. Asynchronies during mechanical ventilation are associated with mortality. <i>Intensive Care Med</i> 2015;41(4):633–641. <a href="https://doi.org/10.1007/s00134-015-3692-6">doi:10.1007/s00134-015-3692-6</a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>相關頁面</h3>
+      <ul class="plain">
+        <li><a href="https://yht5582-source.github.io/icu-intubation/">重症插管導航</a>：插管前評估、RSI 用藥、困難氣道。</li>
+        <li><a href="https://yht5582-source.github.io/mv-liberation/">呼吸器脫離導航</a>：SAT/SBT、RSBI、cuff leak、拔管後 NIV/HFNC。</li>
+        <li><a href="https://yht5582-source.github.io/icu-sedation/">重症鎮靜導航</a>：鎮靜止痛、不同步時的鎮靜調整。</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="disclaimer">本工具用於成人加護病房的臨床教育與決策輔助，所有數值皆為起始建議，需依床邊評估、波形、血氣與病人反應持續調整，不能取代醫師與呼吸治療師的判斷。未涵蓋兒童、新生兒、ECMO 中的通氣設定與特殊模式（如 NAVA、PAV+）的參數調整。頁面不收集或傳送任何病人資料，所有計算都在瀏覽器內完成。最後檢視：2026-10-03。</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/*ENGINE-START*/
+var VE = (function(){
+  const r1 = (v, d = 1) => { const f = 10 ** d; return Math.round(v * f) / f; };
+  const N = v => { if (v === '' || v == null) return null; const x = typeof v === 'number' ? v : parseFloat(v); return Number.isFinite(x) ? x : null; };
+  const within = (v, lo, hi) => v != null && v >= lo && v <= hi;
+
+  // Predicted body weight (ARDSNet): male 50 + 0.91(cm − 152.4); female 45.5 + 0.91(cm − 152.4)
+  function pbw(sex, cm) {
+    cm = N(cm);
+    if (!within(cm, 120, 230) || (sex !== 'm' && sex !== 'f')) return null;
+    return r1((sex === 'm' ? 50 : 45.5) + 0.91 * (cm - 152.4));
+  }
+  const vtRound = ml => Math.round(ml / 10) * 10;
+
+  // ---------- initial settings by phenotype ----------
+  const PHENO = {
+    general: { label: '肺部大致正常', hint: '術後、藥物過量、氣道保護、休克插管',
+      mode: 'VC-A/C', vtKg: 7, vtRange: [6, 8], rr: 16, rrText: '14–18', peep: '5', peepNote: '', fio2Val: '1.0 → 調降', fio2: '30 分鐘內降到 SpO₂ 92–96% 的最低值', flowVal: '50–60 L/min', flow: '減速波；Ti 0.8–1.0 s',
+      targets: ['SpO₂ 92–96%', 'pH 7.35–7.45、PaCO₂ 35–45', 'Pplat ≤ 30（盡量更低）'],
+      notes: ['沒有 ARDS 的病人，VT 4–6 與 10 mL/kg 比較無差異（PReVENT），但仍避免 > 8 mL/kg PBW。'] },
+    ards: { label: 'ARDS／低血氧呼吸衰竭', hint: '雙側浸潤、P/F ≤ 300',
+      mode: 'VC-A/C', vtKg: 6, vtRange: [4, 8], rr: 20, rrText: '18–22，依插管前 MV 調整，最高 35', peep: '8–10', peepNote: '之後依 PEEP/FiO₂ 表（第 2 頁）', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 88–95%（PaO₂ 55–80）', flowVal: '60 L/min', flow: 'I:E 1:1–1:2；流速足以避免流量不足',
+      targets: ['VT 6 mL/kg PBW（容許 4–8）', 'Pplat ≤ 30、驅動壓 ≤ 15', 'pH ≥ 7.30（容許高碳酸血症）', 'SpO₂ 88–95%'],
+      notes: ['可由 8 mL/kg 開始，每 ≤ 2 小時降 1 mL/kg，4 小時內降到 6。', 'VC 或 PC 皆可；選 PC 時要追 VT，避免病人用力造成 VT 過大。'] },
+    copd: { label: 'COPD 急性惡化', hint: '高碳酸血症、氣道阻塞、auto-PEEP',
+      mode: 'VC-A/C', vtKg: 7, vtRange: [6, 8], rr: 12, rrText: '10–14', peep: '5', peepNote: '量 auto-PEEP 後再調', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 88–92%', flowVal: '60–80 L/min', flow: 'I:E ≥ 1:3',
+      targets: ['SpO₂ 88–92%', 'pH 回到正常，PaCO₂ 回到病人平常值', 'auto-PEEP 越低越好', 'Pplat ≤ 30'],
+      notes: ['插管前應先評估 NIV；pH ≤ 7.35 的高碳酸血症呼吸衰竭，NIV 為強建議。'] },
+    asthma: { label: '重度氣喘', hint: '動態過度膨脹、高氣道阻力',
+      mode: 'VC-A/C', vtKg: 6, vtRange: [6, 8], rr: 10, rrText: '8–12', peep: '0–5', peepNote: '被動通氣時不以外加 PEEP 抵銷 auto-PEEP', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 93–95%', flowVal: '80–100 L/min', flow: 'I:E ≥ 1:4',
+      targets: ['容許高碳酸血症，pH ≥ 7.20', 'Pplat < 30', 'auto-PEEP < 10–15', 'SpO₂ 93–95%'],
+      notes: ['高 Ppeak 主要來自氣道阻力，不等於肺泡壓高；肺過度膨脹看 Pplat 與 auto-PEEP。', '插管後低血壓先想 auto-PEEP：斷開管路讓肺排氣。'] },
+    metabolic: { label: '重度代謝性酸中毒', hint: 'DKA、乳酸、中毒；插管前呼吸代償很快',
+      mode: 'VC-A/C', vtKg: 8, vtRange: [6, 8], rr: 28, rrText: '24–35，接近插管前的分鐘通氣量', peep: '5', peepNote: '', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 92–96%', flowVal: '60–80 L/min', flow: 'RR 高時注意呼氣時間與 auto-PEEP',
+      targets: ['PaCO₂ 達到預期代償值', '插管後 15–20 分鐘複驗血氣', 'Pplat ≤ 30'],
+      notes: ['盡量避免插管；必須插管時，插管前後的空窗會讓 PaCO₂ 上升、pH 急降。', '肺正常時 VT 可用 8 mL/kg PBW 以達到高分鐘通氣，但仍監測 Pplat。'] },
+    neuro: { label: '急性腦傷／顱內壓上升', hint: 'TBI、腦出血、腦水腫',
+      mode: 'VC-A/C', vtKg: 7, vtRange: [6, 8], rr: 16, rrText: '14–18，以 ETCO₂ 連續監測', peep: '5–8', peepNote: '維持 MAP 時，PEEP 一般不明顯升高 ICP', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 94–98%，避免低血氧與明顯高血氧', flowVal: '50–60 L/min', flow: 'ETCO₂ 連續監測',
+      targets: ['PaCO₂ 35–45（正常碳酸）', 'SpO₂ ≥ 94%', '避免低血壓與低血氧'],
+      notes: ['不建議預防性過度換氣（PaCO₂ ≤ 25）；PaCO₂ 30–35 只作為腦疝脫時的短暫橋接。'] },
+    nmd: { label: '神經肌肉無力', hint: 'GBS、重症肌無力、高位脊髓損傷',
+      mode: 'VC-A/C', vtKg: 8, vtRange: [6, 8], rr: 14, rrText: '12–16', peep: '5–8', peepNote: '預防肺塌陷', fio2Val: '依 SpO₂', fio2: '調到 SpO₂ 92–96%', flowVal: '50–60 L/min', flow: '依病人舒適度調整',
+      targets: ['PaCO₂ 35–45', 'SpO₂ 92–96%', '分泌物清除與肺擴張'],
+      notes: ['血氧正常不代表通氣足夠；肺活量與 PaCO₂ 才反映呼吸肌狀態。', '病人常有呼吸困難感，VT 偏低時容易出現不同步。'] },
+  };
+
+  function initial(p) {
+    const d = PHENO[p.pheno];
+    if (!d) return null;
+    const w = pbw(p.sex, p.height);
+    const out = { ...d, key: p.pheno, pbw: w, vt: null, vtLo: null, vtHi: null, cautions: [], missing: [], targets: d.targets.slice(), notes: d.notes.slice() };
+    if (w) { out.vt = vtRound(w * d.vtKg); out.vtLo = vtRound(w * d.vtRange[0]); out.vtHi = vtRound(w * d.vtRange[1]); }
+    else out.missing.push('需輸入生理性別與身高（120–230 cm）才能計算 PBW 與 VT。');
+    if (p.pheno === 'metabolic') {
+      const h = N(p.hco3);
+      if (within(h, 2, 40)) {
+        const exp = r1(1.5 * h + 8, 0);
+        out.expPaco2 = exp;
+        out.targets[0] = `PaCO₂ ≈ ${exp} ± 2 mmHg（Winter 公式 1.5 × ${h} + 8）`;
+        if (exp < 20) out.cautions.push(['stop', '預期 PaCO₂ 低於 20', '呼吸器很難達成這個程度的代償；插管前就要同時處理病因，評估 bicarbonate 或緊急透析，並請資深醫師在場。']);
+      } else out.missing.push('輸入 HCO₃⁻ 可計算預期代償 PaCO₂。');
+    }
+    if (p.pheno === 'copd') {
+      const b = N(p.base);
+      if (within(b, 30, 90)) out.targets[1] = `PaCO₂ 回到平常的 ${b} mmHg 左右，以 pH 正常為準`;
+    }
+    if (p.shock) {
+      out.cautions.push(['warn', '血流動力學不穩定', '正壓通氣與 PEEP 會減少靜脈回流並增加右心後負荷。設定或上調 PEEP 前後都要看 MAP、灌流與右心；預備輸液與升壓劑，並避免 auto-PEEP。']);
+      if (p.pheno === 'ards') out.cautions.push(['info', 'ARDS 合併休克', 'PEEP 上調採小幅（2 cmH₂O）並觀察血壓；若驅動壓沒有下降，較高 PEEP 帶來的循環代價可能不值得。']);
+    }
+    if (p.pheno === 'metabolic' || (p.pheno === 'general' && p.shock)) out.cautions.push(['info', '插管前後', '插管前盡量維持病人原本的分鐘通氣；插管後立即以高 RR 接上呼吸器，避免長時間手壓空窗。']);
+    return out;
+  }
+
+  // ---------- ARDS definition ----------
+  function ardsDef(i) {
+    const pao2 = N(i.pao2), fio2 = N(i.fio2), spo2 = N(i.spo2), peep = N(i.peep);
+    const fOk = within(fio2, 0.21, 1);
+    const pf = fOk && within(pao2, 20, 700) ? Math.round(pao2 / fio2) : null;
+    const sf = fOk && within(spo2, 50, 97) ? Math.round(spo2 / fio2) : null;
+    const res = { pf, sf, basis: null, severity: null, hypox: false, met: false, missing: [], berlin: null, sfInvalid: fOk && spo2 != null && spo2 > 97 };
+    if (pf != null) { res.basis = 'P/F'; res.hypox = pf <= 300; }
+    else if (sf != null) { res.basis = 'S/F'; res.hypox = sf <= 315; }
+    else res.missing.push('需 PaO₂ 與 FiO₂，或 SpO₂ ≤ 97% 與 FiO₂');
+    if (i.setting === 'inv') {
+      if (pf != null) res.severity = pf <= 100 ? 'severe' : pf <= 200 ? 'moderate' : pf <= 300 ? 'mild' : null;
+      else if (sf != null) res.severity = sf <= 148 ? 'severe' : sf <= 235 ? 'moderate' : sf <= 315 ? 'mild' : null;
+      if (pf != null && pf <= 300) res.berlin = within(peep, 5, 40) ? res.severity : 'nopeep';
+    } else {
+      res.supportOk = i.support === 'hfnc' || i.support === 'niv';
+      if (!res.supportOk) res.missing.push('非插管 ARDS 需在 HFNC ≥ 30 L/min 或 NIV/CPAP（EPAP ≥ 5）下評估；資源有限場域可不要求');
+      if (res.hypox) res.severity = 'nonintubated';
+    }
+    const crit = [i.c1, i.c2, i.c3];
+    if (crit.some(c => !c)) res.missing.push('時間、影像或非心因性條件尚未全部確認');
+    res.met = res.hypox && crit.every(Boolean) && (i.setting === 'inv' || res.supportOk);
+    return res;
+  }
+  const SEV_LABEL = { mild: '輕度', moderate: '中度', severe: '重度', nonintubated: '非插管 ARDS（不分級）' };
+
+  // ---------- ARDSNet PEEP/FiO2 tables ----------
+  const LOWER = [[.3,5],[.4,5],[.4,8],[.5,8],[.5,10],[.6,10],[.7,10],[.7,12],[.7,14],[.8,14],[.9,14],[.9,16],[.9,18],[1,18],[1,20],[1,22],[1,24]];
+  const HIGHER = [[.3,5],[.3,8],[.3,10],[.3,12],[.3,14],[.4,14],[.4,16],[.5,16],[.5,18],[.5,20],[.6,20],[.7,20],[.8,20],[.8,22],[.9,22],[1,22],[1,24]];
+  const DISP = {
+    lower: [['0.3','5'],['0.4','5'],['0.4','8'],['0.5','8'],['0.5','10'],['0.6','10'],['0.7','10'],['0.7','12'],['0.7','14'],['0.8','14'],['0.9','14'],['0.9','16'],['0.9','18'],['1.0','18–24']],
+    higher: [['0.3','5'],['0.3','8'],['0.3','10'],['0.3','12'],['0.3','14'],['0.4','14'],['0.4','16'],['0.5','16'],['0.5','18'],['0.5–0.8','20'],['0.8','22'],['0.9','22'],['1.0','22'],['1.0','24']],
+  };
+  function tableFio2(fio2) {
+    fio2 = N(fio2);
+    if (!within(fio2, 0.21, 1)) return null;
+    return Math.min(1, Math.max(0.3, Math.ceil(r1(fio2 * 10, 3) - 1e-9) / 10));
+  }
+  function peepFor(fio2, which) {
+    const f = tableFio2(fio2);
+    if (f == null) return null;
+    const rows = (which === 'higher' ? HIGHER : LOWER).filter(r => Math.abs(r[0] - f) < 1e-6).map(r => r[1]);
+    return { fio2: f, lo: Math.min(...rows), hi: Math.max(...rows) };
+  }
+
+  // ---------- ARDSNet VT / Pplat / pH adjustment ----------
+  function hco3Of(ph, paco2) { return 0.0307 * paco2 * 10 ** (ph - 6.1); }
+  function paco2For(ph, hco3) { return hco3 / (0.0307 * 10 ** (ph - 6.1)); }
+  function ardsnet(i) {
+    const w = N(i.pbw), vt = N(i.vt), pplat = N(i.pplat), peep = N(i.peep), rr = N(i.rr), ph = N(i.ph), paco2 = N(i.paco2);
+    const acts = [];
+    const vtkg = w && within(vt, 100, 2000) ? r1(vt / w) : null;
+    const dp = within(pplat, 5, 80) && within(peep, 0, 30) && pplat >= peep ? r1(pplat - peep, 0) : null;
+    const res = { vtkg, dp, acts, newVt: null, newRr: null };
+    if (vtkg == null) acts.push(['warn', '缺 PBW 或 VT', '請在上方輸入性別與身高，並輸入目前 VT。']);
+    if (pplat == null) acts.push(['warn', '尚未量 Pplat', '吸氣末暫停 0.5 秒量 Pplat；至少每 4 小時及每次調整 VT 或 PEEP 後量一次。']);
+    if (vtkg != null && pplat != null) {
+      if (pplat > 30) {
+        if (vtkg > 4.05) {
+          const t = Math.max(4, vtkg - 1); res.newVt = vtRound(t * w);
+          acts.push(['stop', `Pplat ${pplat} > 30：VT 降 1 mL/kg`, `VT ${vt} → ${res.newVt} mL（${r1(t)} mL/kg），最低到 4 mL/kg。RR 同步上調以維持分鐘通氣。`]);
+        } else acts.push(['stop', `VT 已在 4 mL/kg，Pplat 仍 > 30`, '確認胸壁或腹內壓（肥胖、腹脹）是否墊高 Pplat；考慮俯臥、肌鬆、聯絡 ECMO 中心。']);
+      } else if (vtkg > 6.5) {
+        const t = Math.max(6, vtkg - 1); res.newVt = vtRound(t * w);
+        acts.push(['warn', `VT ${vtkg} mL/kg 高於 6`, `每 ≤ 2 小時降 1 mL/kg：${vt} → ${res.newVt} mL，直到 6 mL/kg。`]);
+      } else if (pplat < 25 && vtkg < 5.5) {
+        const t = Math.min(6, vtkg + 1); res.newVt = vtRound(t * w);
+        acts.push(['info', `Pplat < 25 且 VT < 6 mL/kg`, `可將 VT 加 1 mL/kg（→ ${res.newVt} mL），直到 Pplat > 25 或 VT 到 6 mL/kg。`]);
+      } else acts.push(['go', 'VT 與 Pplat 在目標內', `VT ${vtkg} mL/kg、Pplat ${pplat}。持續監測。`]);
+    }
+    if (dp != null && dp > 15) acts.push(['warn', `驅動壓 ${dp} > 15`, '驅動壓高與死亡率相關（觀察性資料）。試著降 VT，或以小幅調整 PEEP 看驅動壓是否下降；沒有試驗證實以驅動壓為目標的策略。']);
+    if (ph != null && within(ph, 6.8, 7.8)) {
+      const canEst = within(paco2, 15, 150) && within(rr, 4, 60);
+      const estRr = tgtPh => {
+        if (!canEst) return null;
+        const h = hco3Of(ph, paco2), tgt = paco2For(tgtPh, h);
+        return { rr: Math.min(35, Math.ceil(rr * paco2 / tgt)), tgt: Math.round(tgt) };
+      };
+      if (ph < 7.15) {
+        if (rr != null && rr >= 35) acts.push(['stop', `pH ${ph} < 7.15 且 RR 已 35`, 'VT 可加 1 mL/kg（此時 Pplat 可暫時超過 30），可考慮 NaHCO₃；同時處理代謝性因素並評估 ECMO。']);
+        else { res.newRr = 35; acts.push(['stop', `pH ${ph} < 7.15`, `RR 調到 35${rr != null ? `（目前 ${rr}）` : ''}；若仍 < 7.15，VT 可加 1 mL/kg，Pplat 可暫時超過 30，並考慮 NaHCO₃。`]); }
+      } else if (ph < 7.30) {
+        const e = estRr(7.32);
+        if (rr != null && rr >= 35) acts.push(['warn', `pH ${ph}，RR 已 35`, '已到 RR 上限，容許此 pH 並處理死腔與代謝性因素。']);
+        else { if (e) res.newRr = Math.max(rr + 1, e.rr); acts.push(['warn', `pH ${ph}：7.15–7.30`, `上調 RR（最高 35）直到 pH > 7.30 或 PaCO₂ < 25。${e ? `粗估 RR ${rr} → ${res.newRr}（目標 PaCO₂ 約 ${e.tgt}，假設死腔不變）。` : ''}RR 上升後確認 auto-PEEP。`]); }
+      } else if (ph > 7.45) {
+        acts.push(['info', `pH ${ph} > 7.45`, '若病人沒有自行觸發，可降低 RR。']);
+      } else acts.push(['go', `pH ${ph} 在 7.30–7.45`, '通氣目標達成。']);
+    }
+    return res;
+  }
+
+  // ---------- obstructive: expiratory time & auto-PEEP ----------
+  function obstructive(i) {
+    const rr = N(i.rr), vt = N(i.vt), flow = N(i.flow), peep = N(i.peep), tpeep = N(i.tpeep), ppeak = N(i.ppeak), pplat = N(i.pplat);
+    const asthma = i.kind === 'asthma';
+    const r = { ti: null, te: null, ie: null, autoPeep: null, alerts: [], actions: [] };
+    if (within(rr, 4, 60) && within(vt, 100, 2000) && within(flow, 10, 150)) {
+      r.ti = r1(vt / 1000 / (flow / 60), 2);
+      r.te = r1(60 / rr - r.ti, 2);
+      r.ie = r.te > 0 ? r1(r.te / r.ti, 1) : 0;
+      const ieMin = asthma ? 4 : 3;
+      if (r.te <= 0) r.alerts.push(['stop', '吸氣時間大於呼吸週期', '設定不可行，請檢查 RR、VT 與流速。']);
+      else if (r.ie < 2) r.alerts.push(['stop', `I:E 1:${r.ie}，呼氣時間嚴重不足`, '阻塞性病人幾乎一定會累積 auto-PEEP。']);
+      else if (r.ie < ieMin) r.alerts.push(['warn', `I:E 1:${r.ie}，低於建議的 1:${ieMin}`, '延長呼氣時間。']);
+      if (rr > 6) {
+        const rr2 = Math.max(asthma ? 8 : 10, rr - 4);
+        if (rr2 < rr) { const te2 = r1(60 / rr2 - r.ti, 2); r.rrGain = { rr: rr2, te: te2, ie: r1(te2 / r.ti, 1) }; }
+      }
+      const fl2 = asthma ? 100 : 80;
+      if (flow < fl2) { const ti2 = r1(vt / 1000 / (fl2 / 60), 2); r.flowGain = { flow: fl2, te: r1(60 / rr - ti2, 2) }; }
+    }
+    if (within(peep, 0, 30) && within(tpeep, 0, 40)) {
+      r.autoPeep = r1(Math.max(0, tpeep - peep), 0);
+      if (r.autoPeep >= 10) r.alerts.push(['stop', `auto-PEEP ${r.autoPeep} cmH₂O`, '明顯動態過度膨脹，有低血壓與氣胸風險。']);
+      else if (r.autoPeep >= 5) r.alerts.push(['warn', `auto-PEEP ${r.autoPeep} cmH₂O`, '有意義的空氣滯留。']);
+    }
+    if (within(pplat, 5, 80) && pplat >= (asthma ? 30 : 31)) r.alerts.push(['stop', `Pplat ${pplat}`, asthma ? '氣喘病人 Pplat 應 < 30。' : 'Pplat 應 ≤ 30。']);
+    if (within(ppeak, 5, 100) && within(pplat, 5, 80) && ppeak - pplat >= 15) r.alerts.push(['info', `Ppeak − Pplat = ${ppeak - pplat}`, '氣道阻力高：給予支氣管擴張劑與類固醇、抽痰、確認管路沒有扭折或咬管。這部分壓力大多消耗在氣道，不是肺泡。']);
+    if (i.hypo) r.actions.push(['avoid', '先斷開呼吸器 30–60 秒', '讓肺排氣，若血壓回升即證實為動態過度膨脹；之後以較低 RR 重新接上，並給予輸液。']);
+    if (r.rrGain) r.actions.push(['first', `降 RR：${rr} → ${r.rrGain.rr}`, `呼氣時間 ${r.te} → ${r.rrGain.te} s（I:E 1:${r.rrGain.ie}）。降低 RR 延長呼氣最有效，代價是 PaCO₂ 上升，需容許高碳酸血症。`]);
+    if (r.flowGain) r.actions.push(['alt', `提高吸氣流速到 ${r.flowGain.flow} L/min`, `縮短吸氣時間，呼氣時間 → ${r.flowGain.te} s。效果小於降 RR，Ppeak 會上升，但這部分壓力不會傳到肺泡。`]);
+    r.actions.push(['alt', '降低 VT（6 mL/kg PBW）', '減少需要吐出的容積，也降低 Pplat。']);
+    r.actions.push(['alt', '治療阻塞本身', '吸入型支氣管擴張劑（經呼吸器管路）、全身性類固醇、抽痰；氣喘可另考慮靜脈鎂。']);
+    if (!asthma && i.trig && r.autoPeep != null && r.autoPeep > 0) r.actions.push(['first', `外加 PEEP 約 ${Math.round(r.autoPeep * 0.8)} cmH₂O`, `約為 auto-PEEP（${r.autoPeep}）的 80%，降低病人觸發所需的吸氣力；調整後再量 total PEEP，若 total PEEP 上升則退回。`]);
+    else if (asthma && i.trig) r.actions.push(['alt', '氣喘病人的無效觸發', '外加 PEEP 在氣喘的效果不一致，可能增加過度膨脹；優先降 RR 與 VT，並調整鎮靜。']);
+    r.actions.push(['avoid', '避免', '只換模式而不處理呼氣時間；為了讓 PaCO₂「正常」而提高 RR。']);
+    return r;
+  }
+
+  // ---------- mechanics & ABG ----------
+  function mechanics(i) {
+    const w = N(i.pbw), rr = N(i.rr), vt = N(i.vt), mvIn = N(i.mv), ph = N(i.ph), paco2 = N(i.paco2), pao2 = N(i.pao2), fio2 = N(i.fio2), spo2 = N(i.spo2),
+      ppeak = N(i.ppeak), pplat = N(i.pplat), peep = N(i.peep), flow = N(i.flow), mpaw = N(i.mpaw);
+    const okVt = within(vt, 100, 2000), okRr = within(rr, 4, 60), okF = within(fio2, 0.21, 1);
+    const m = {};
+    m.vtkg = w && okVt ? r1(vt / w) : null;
+    m.mv = within(mvIn, 1, 40) ? mvIn : okVt && okRr ? r1(vt * rr / 1000) : null;
+    m.pf = okF && within(pao2, 20, 700) ? Math.round(pao2 / fio2) : null;
+    m.sf = okF && within(spo2, 50, 97) ? Math.round(spo2 / fio2) : null;
+    const okP = within(pplat, 5, 80) && within(peep, 0, 30) && pplat >= peep;
+    m.dp = okP ? r1(pplat - peep, 0) : null;
+    m.cstat = m.dp && okVt ? r1(vt / m.dp, 0) : null;
+    m.raw = within(ppeak, 5, 100) && within(pplat, 5, 80) && ppeak >= pplat && within(flow, 10, 150) ? r1((ppeak - pplat) / (flow / 60), 1) : null;
+    m.mp = okRr && okVt && within(ppeak, 5, 100) && m.dp != null ? r1(0.098 * rr * (vt / 1000) * (ppeak - m.dp / 2), 1) : null;
+    m.vr = m.mv && w && within(paco2, 15, 150) ? r1((m.mv * 1000 * paco2) / (w * 100 * 37.5), 2) : null;
+    m.oi = okF && within(mpaw, 2, 60) && within(pao2, 20, 700) ? r1(fio2 * 100 * mpaw / pao2, 1) : null;
+    return m;
+  }
+  const OTGT = { std: [92, 96], ards: [88, 95], copd: [88, 92] };
+  function abgAdjust(i) {
+    const w = N(i.pbw), rr = N(i.rr), vt = N(i.vt), paco2 = N(i.paco2), tgt = N(i.target), ph = N(i.ph), spo2 = N(i.spo2), fio2 = N(i.fio2), peep = N(i.peep);
+    const out = { vent: [], oxy: [] };
+    if (within(rr, 4, 60) && within(vt, 100, 2000) && within(paco2, 15, 150) && within(tgt, 20, 90)) {
+      const diff = paco2 - tgt;
+      if (Math.abs(diff) < 3) out.vent.push(['go', 'PaCO₂ 接近目標', '不需要調整分鐘通氣。']);
+      else {
+        const nr = r1(rr * paco2 / tgt, 0);
+        out.newRr = nr;
+        const vtkg = w ? vt / w : null;
+        if (nr > 35) {
+          out.vent.push(['warn', `需要 RR ≈ ${nr}，超過 35`, 'RR 太高會縮短呼氣時間並增加死腔通氣比例。重新檢視目標 PaCO₂（是否容許高碳酸血症）、死腔來源（管路死腔、肺栓塞、過度膨脹）與 CO₂ 產生量（發燒、過度餵食）。']);
+          out.newRr = 35;
+        } else out.vent.push([diff > 0 ? 'warn' : 'info', `RR ${rr} → ${nr}`, `依 新 RR = RR × PaCO₂ ÷ 目標（${paco2} → ${tgt}），假設 VT 與死腔不變。15–30 分鐘後複驗血氣或看 ETCO₂ 趨勢。`]);
+        if (diff > 0 && vtkg != null && vtkg < 6) {
+          const nv = vtRound(Math.min(vt * paco2 / tgt, 8 * w));
+          out.vent.push(['alt', `或提高 VT → ${nv} mL`, `目前 ${r1(vtkg)} mL/kg，可在 Pplat ≤ 30 的前提下增加。`]);
+        }
+        if (diff < 0 && ph != null && ph < 7.35) out.vent.push(['stop', '注意：PaCO₂ 低但 pH 也低', '這是代謝性酸中毒的呼吸代償，不要為了讓 PaCO₂「正常」而降低分鐘通氣。']);
+        if (diff > 0 && i.obstructive) out.vent.push(['warn', '阻塞性病人', '提高 RR 可能加重 auto-PEEP，調整後量 total PEEP。']);
+      }
+    } else out.vent.push(['mute', '通氣調整', '輸入 RR、VT、PaCO₂ 與目標 PaCO₂。']);
+    const [lo, hi] = OTGT[i.otgt] || OTGT.std;
+    if (within(spo2, 50, 100) && within(fio2, 0.21, 1)) {
+      if (spo2 < lo) out.oxy.push(['warn', `SpO₂ ${spo2}% 低於 ${lo}%`, `${fio2 >= 0.6 ? 'FiO₂ 已高，優先上調 PEEP（ARDS 依 PEEP/FiO₂ 表），並評估擴張性與血壓反應；' : '先上調 FiO₂；'}同時檢查管路位置、分泌物、氣胸與體位。`]);
+      else if (spo2 > hi) out.oxy.push(['info', `SpO₂ ${spo2}% 高於 ${hi}%`, fio2 > 0.4 ? `先降 FiO₂（每次 0.05–0.1），FiO₂ ≤ 0.4 後再考慮降 PEEP${peep != null ? `（目前 ${peep}）` : ''}。` : '可降 FiO₂；若 FiO₂ 已 ≤ 0.4，可每次降 PEEP 2 cmH₂O。']);
+      else out.oxy.push(['go', `SpO₂ ${spo2}% 在 ${lo}–${hi}%`, 'FiO₂ > 0.4 時持續嘗試調降。']);
+    } else out.oxy.push(['mute', '氧合調整', '輸入 SpO₂ 與 FiO₂。']);
+    return out;
+  }
+
+  // ---------- pressure pattern ----------
+  function pressure(i) {
+    const ppeak = N(i.ppeak), pplat = N(i.pplat), peep = N(i.peep), tpeep = N(i.tpeep);
+    const r = { grad: null, dp: null, autoPeep: null, pattern: null, causes: [] };
+    if (!within(ppeak, 5, 100)) return r;
+    if (!within(pplat, 5, 80)) { r.pattern = 'noplat'; return r; }
+    if (pplat > ppeak) { r.pattern = 'invalid'; return r; }
+    r.grad = ppeak - pplat;
+    const base = within(tpeep, 0, 40) ? tpeep : within(peep, 0, 30) ? peep : null;
+    if (base != null && pplat >= base) r.dp = pplat - base;
+    if (within(tpeep, 0, 40) && within(peep, 0, 30)) r.autoPeep = Math.max(0, tpeep - peep);
+    const res = r.grad >= 10, el = pplat > 30 || (r.dp != null && r.dp > 15);
+    r.pattern = res && el ? 'both' : res ? 'resistive' : el ? 'elastic' : 'normal';
+    return r;
+  }
+
+  return { pbw, PHENO, initial, ardsDef, SEV_LABEL, LOWER, HIGHER, DISP, tableFio2, peepFor, ardsnet, obstructive, mechanics, abgAdjust, OTGT, pressure, hco3Of, paco2For };
+})();
+if (typeof module !== 'undefined') module.exports = VE;
+/*ENGINE-END*/
+</script>
+<script>
+(function(){
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1800);}
+function copyText(txt){const ok=()=>toast('已複製到剪貼簿');const fb=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){toast('無法自動複製');}ta.remove();};if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(ok,fb);else fb();}
+function segSet(sel,v){$$(sel+' button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===String(v)?'true':'false'));}
+function segBind(sel,cb){$$(sel+' button').forEach(b=>b.addEventListener('click',()=>{segSet(sel,b.dataset.v);cb(b.dataset.v);}));}
+const alertHtml = a => `<div class="alert ${a[0]==='mute'?'info':a[0]}"><strong>${esc(a[1])}</strong><span class="small">${esc(a[2])}</span></div>`;
+const optHtml = a => `<div class="opt ${a[0]==='stop'?'avoid':a[0]==='go'?'first':a[0]==='info'||a[0]==='mute'?'alt':a[0]}"><b>${esc(a[1])}</b><span class="small muted">${esc(a[2])}</span></div>`;
+const tile = (k, v, unit, st, sub) => `<div class="tile ${st||''}"><div class="k">${k}</div><div class="v">${v==null?'—':v}${v!=null&&unit?`<small>${unit}</small>`:''}</div>${sub?`<div class="s">${sub}</div>`:''}</div>`;
+
+/* ---------- tabs ---------- */
+const TABS=['init','ards','obs','abg','trbl','mode','ref'];
+const PT_TABS=new Set(['init','ards','obs','abg']);
+function showTab(id){
+  if(!TABS.includes(id)) id='init';
+  TABS.forEach(t=>{$('#'+t).hidden=t!==id;$('#tab-'+t).setAttribute('aria-selected',t===id?'true':'false');});
+  $('#ptbar').hidden=!PT_TABS.has(id);
+  try{localStorage.setItem('vent-tab',id);}catch(e){}
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.t)));
+
+/* ---------- patient ---------- */
+const P={sex:'m',height:'170'};
+const pbw=()=>VE.pbw(P.sex,P.height);
+function renderPt(){
+  const w=pbw();
+  $('#p-pbw').innerHTML=w?`${w}<small> kg</small>`:'—';
+  $('#p-vt').textContent=w?`${Math.round(w*6)} ／ ${Math.round(w*8)} mL`:'—';
+}
+segSet('#p-sex',P.sex);$('#p-ht').value=P.height;
+segBind('#p-sex',v=>{P.sex=v;renderAll();});
+$('#p-ht').addEventListener('input',e=>{P.height=e.target.value;renderAll();});
+
+/* ---------- 1. initial ---------- */
+const I={pheno:'ards',hco3:'',base:'',shock:false};
+$('#i-pheno').innerHTML=Object.entries(VE.PHENO).map(([k,d])=>`<button data-v="${k}"><span>${esc(d.label)}</span><small>${esc(d.hint)}</small></button>`).join('');
+segSet('#i-pheno',I.pheno);
+segBind('#i-pheno',v=>{I.pheno=v;$('#i-sample').hidden=true;renderInit();});
+$('#i-hco3').addEventListener('input',e=>{I.hco3=e.target.value;$('#i-sample').hidden=true;renderInit();});
+$('#i-base').addEventListener('input',e=>{I.base=e.target.value;$('#i-sample').hidden=true;renderInit();});
+$('#i-shock').addEventListener('change',e=>{I.shock=e.target.checked;$('#i-sample').hidden=true;renderInit();});
+let initSummary='';
+function renderInit(){
+  $('#i-hco3w').hidden=I.pheno!=='metabolic';$('#i-basew').hidden=I.pheno!=='copd';
+  $('#i-extra').hidden=!['metabolic','copd'].includes(I.pheno);
+  const r=VE.initial({pheno:I.pheno,sex:P.sex,height:P.height,hco3:I.hco3,base:I.base,shock:I.shock});
+  const vt=r.vt?`${r.vt} mL`:'—';
+  const rows=[
+    ['模式',r.mode,'沒有可靠自主呼吸時用 A/C；VC 或 PC 皆可'],
+    ['VT',vt,r.pbw?`${r.vtKg} mL/kg PBW（範圍 ${r.vtLo}–${r.vtHi} mL）`:`${r.vtKg} mL/kg PBW`],
+    ['RR',String(r.rr),r.rrText],
+    ['PEEP',r.peep,r.peepNote],
+    ['FiO₂',r.fio2Val,r.fio2],
+    ['流速',r.flowVal,r.flow],
+  ];
+  $('#i-out').innerHTML=`
+    <div class="row" style="justify-content:space-between;align-items:baseline"><div><div class="eyebrow">${esc(r.label)}</div><div class="mode">${esc(r.mode)}</div></div>${r.pbw?`<span class="pill ev">PBW ${r.pbw} kg</span>`:''}</div>
+    <div class="tablebox" style="margin-top:8px"><table class="set"><tbody>${rows.map(x=>`<tr><td>${x[0]}</td><td class="v">${esc(x[1])}</td><td class="r">${esc(x[2])}</td></tr>`).join('')}</tbody></table></div>
+    ${r.missing.length?`<div class="alerts" style="margin-top:10px">${r.missing.map(m=>alertHtml(['warn','資料不足',m])).join('')}</div>`:''}
+    ${r.cautions.length?`<div class="alerts" style="margin-top:10px">${r.cautions.map(alertHtml).join('')}</div>`:''}
+    <div class="sub-h">目標</div><ul class="plain">${r.targets.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+    <div class="sub-h">接上後第一小時</div><ul class="plain">
+      <li>15–30 分鐘內抽動脈血氣，並與 ETCO₂ 對照建立差距。</li>
+      <li>吸氣末暫停量 Pplat、呼氣末暫停量 total PEEP。</li>
+      <li>確認觸發與波形：有沒有雙重觸發、無效觸發或流量不足。</li>
+      <li>血壓與灌流；CXR 確認管路與有無氣胸。</li>
+    </ul>
+    ${r.notes.length?`<div class="sub-h">備註</div><ul class="plain">${r.notes.map(t=>`<li class="muted">${esc(t)}</li>`).join('')}</ul>`:''}
+    <div class="row noprint" style="margin-top:14px"><button class="btn primary" id="i-copy">複製設定摘要</button><button class="btn" onclick="window.print()">列印</button></div>`;
+  initSummary=[`[呼吸器起始設定] 情境：${r.label}`,r.pbw?`PBW ${r.pbw} kg（${P.sex==='m'?'男':'女'}，${P.height} cm）`:'PBW 未計算',
+    `模式 ${r.mode}；VT ${vt}（${r.vtKg} mL/kg PBW）；RR ${r.rr}；PEEP ${r.peep}${r.peepNote?`（${r.peepNote}）`:''}；FiO₂ ${r.fio2}；流速 ${r.flowVal}，${r.flow}`,
+    `目標：${r.targets.join('；')}`,...r.cautions.map(c=>`注意：${c[1]}`),'接上後 15–30 分鐘血氣，量 Pplat 與 total PEEP。'].join('\n');
+  $('#i-copy').addEventListener('click',()=>copyText(initSummary));
+}
+
+/* ---------- 2. ARDS ---------- */
+const A={setting:'inv',pao2:'72',fio2:'0.6',spo2:'92',peep:'10',support:'hfnc',c1:true,c2:true,c3:true,tbl:'lower',
+  n:{vt:'480',pplat:'31',peep:'10',rr:'22',ph:'7.26',paco2:'52'}};
+const ADJ=[
+  {k:'lvt',name:'低潮氣量、限制 Pplat',who:'所有 ARDS：VT 4–8 mL/kg PBW、Pplat < 30',ev:'ATS 2017 強建議；ESICM 2023 強建議',on:()=>true},
+  {k:'prone',name:'俯臥通氣',who:'P/F < 150（FiO₂ ≥ 0.6、PEEP ≥ 5）：穩定 12–24 小時內開始，每次 ≥ 16 小時',ev:'ATS 2017 強建議（> 12 h/天，重度）；ESICM 2023 強建議（≥ 16 h，中重度）',on:pf=>pf!=null&&pf<150},
+  {k:'peep',name:'較高 PEEP',who:'中重度（P/F ≤ 200）；不併用長時間肺泡擴張術',ev:'ATS 2024 有條件建議；ESICM 2023 無法建議支持或反對',on:pf=>pf!=null&&pf<=200},
+  {k:'nmb',name:'神經肌肉阻斷劑',who:'早期（≤ 48 小時）重度 ARDS，深鎮靜下仍不同步或驅動壓過高時',ev:'ATS 2024 有條件建議（早期重度）；ESICM 2023 不建議常規持續輸注',on:pf=>pf!=null&&pf<=100},
+  {k:'ster',name:'全身性類固醇',who:'ARDS（劑量與療程依試驗，如 dexamethasone 20 mg × 5 天再 10 mg × 5 天）',ev:'ATS 2024 有條件建議',on:pf=>pf!=null&&pf<=300},
+  {k:'ecmo',name:'VV-ECMO',who:'最佳化後仍符合 EOLIA 條件的重度 ARDS，於 ECMO 中心執行',ev:'ATS 2024 有條件建議；ESICM 2023 建議（EOLIA 條件）',on:pf=>pf!=null&&pf<80},
+  {k:'rm',name:'長時間高壓肺泡擴張術',who:'例如 35–40 cmH₂O 持續 ≥ 1 分鐘，或階梯式升壓',ev:'ATS 2024 強烈反對；ESICM 2023 反對',on:()=>false,avoid:true},
+  {k:'hfov',name:'高頻震盪通氣（HFOV）',who:'中重度 ARDS 的常規使用',ev:'ATS 2017 強烈反對',on:()=>false,avoid:true},
+];
+function aUntouch(){$('#a-sample').hidden=true;}
+segBind('#a-set',v=>{A.setting=v;aUntouch();renderArds();});
+segBind('#a-tbl',v=>{A.tbl=v;renderArds();});
+['pao2','fio2','spo2','peep'].forEach(k=>$('#a-'+k).addEventListener('input',e=>{A[k]=e.target.value;aUntouch();renderArds();}));
+$('#a-sup').addEventListener('change',e=>{A.support=e.target.value;aUntouch();renderArds();});
+['c1','c2','c3'].forEach(k=>$('#a-'+k).addEventListener('change',e=>{A[k]=e.target.checked;aUntouch();renderArds();}));
+['vt','pplat','peep','rr','ph','paco2'].forEach(k=>$('#n-'+k).addEventListener('input',e=>{A.n[k]=e.target.value;aUntouch();renderArds();}));
+function fillArds(){
+  segSet('#a-set',A.setting);segSet('#a-tbl',A.tbl);
+  ['pao2','fio2','spo2','peep'].forEach(k=>$('#a-'+k).value=A[k]);$('#a-sup').value=A.support;
+  ['c1','c2','c3'].forEach(k=>$('#a-'+k).checked=A[k]);
+  ['vt','pplat','peep','rr','ph','paco2'].forEach(k=>$('#n-'+k).value=A.n[k]);
+}
+function renderArds(){
+  $('#a-peepw').hidden=A.setting!=='inv';$('#a-supw').hidden=A.setting==='inv';
+  const d=VE.ardsDef(A);
+  let h='';
+  const ratio=[d.pf!=null?`P/F <b class="mono">${d.pf}</b>`:null,d.sf!=null?`S/F <b class="mono">${d.sf}</b>`:null].filter(Boolean).join('　');
+  if(ratio)h+=`<p>${ratio}${d.basis==='S/F'?' <span class="small muted">（無 PaO₂，以 S/F 判斷）</span>':''}</p>`;
+  if(d.sfInvalid)h+=`<p class="small muted">SpO₂ > 97% 時 S/F 不可用（氧解離曲線平坦段）。</p>`;
+  if(d.met){
+    const sev=VE.SEV_LABEL[d.severity];
+    h+=`<div class="alert ${d.severity==='severe'?'stop':'warn'}" style="margin-top:8px"><strong>符合 ARDS（2024 全球定義）：${sev}</strong><span class="small">${A.setting==='inv'?(d.berlin==='nopeep'?'Berlin 定義另要求 PEEP ≥ 5 cmH₂O 下評估。':d.berlin?`Berlin 定義同為${VE.SEV_LABEL[d.berlin]}。`:'以 S/F 分級；Berlin 定義需 P/F。'):'非插管病人不分嚴重度；插管後再以 P/F 或 S/F 分級。'}</span></div>`;
+  } else if(d.hypox){
+    h+=`<div class="alert info" style="margin-top:8px"><strong>低血氧程度符合，其他條件待確認</strong><span class="small">${esc(d.missing.join('；'))}</span></div>`;
+  } else if(d.pf!=null||d.sf!=null){
+    h+=`<div class="alert go" style="margin-top:8px"><strong>未達 ARDS 低血氧門檻</strong><span class="small">P/F ≤ 300 或 S/F ≤ 315（SpO₂ ≤ 97%）。</span></div>`;
+  } else h+=`<p class="small muted">${esc(d.missing.join('；'))}</p>`;
+  h+=`<p class="small muted" style="margin-top:8px">插管 ARDS 分級：輕度 P/F 201–300（S/F 236–315）、中度 101–200（149–235）、重度 ≤ 100（≤ 148）。</p>`;
+  $('#a-def').innerHTML=h;
+  // PEEP table
+  const f=VE.tableFio2(A.fio2);
+  const disp=VE.DISP[A.tbl];
+  const hit=c=>{if(f==null)return false;const p=c.split('–').map(Number);return p.length>1?f>=p[0]-1e-6&&f<=p[1]+1e-6:Math.abs(p[0]-f)<1e-6;};
+  $('#a-ptbl').innerHTML=`<div class="hd"><span>FiO₂</span><span>PEEP</span></div>`+disp.map(([fi,pe])=>`<div class="${hit(fi)?'hit':''}"><span>${fi}</span><span>${pe}</span></div>`).join('');
+  const pr=VE.peepFor(A.fio2,A.tbl);
+  $('#a-peepout').innerHTML=pr?`<p>FiO₂ ${A.fio2}${Math.abs(pr.fio2-Number(A.fio2))>1e-6?`（對照 ${pr.fio2} 列）`:''} → PEEP <b class="mono">${pr.lo===pr.hi?pr.lo:`${pr.lo}–${pr.hi}`}</b> cmH₂O${A.setting==='inv'&&A.peep!==''?`　<span class="small muted">目前 ${esc(A.peep)}</span>`:''}</p>`:'<p class="small muted">輸入 FiO₂（0.21–1）。</p>';
+  // ARDSNet
+  const n=VE.ardsnet({pbw:pbw(),...A.n});
+  const pl=Number(A.n.pplat);
+  $('#n-tiles').innerHTML=tile('VT / PBW',n.vtkg,'mL/kg',n.vtkg==null?'':n.vtkg>8?'stop':n.vtkg>6.5?'warn':'ok')
+    +tile('Pplat',A.n.pplat===''?null:pl,'cmH₂O',A.n.pplat===''?'':pl>30?'stop':'ok')
+    +tile('驅動壓',n.dp,'cmH₂O',n.dp==null?'':n.dp>15?'warn':'ok')
+    +tile('Cstat',n.dp?Math.round(Number(A.n.vt)/n.dp):null,'mL/cmH₂O','');
+  $('#n-act').innerHTML=n.acts.map(optHtml).join('');
+  // adjuncts
+  const pf=d.pf!=null?d.pf:d.sf!=null?(d.sf<=148?100:d.sf<=235?200:d.sf<=315?300:400):null;
+  $('#a-adj').innerHTML=ADJ.map(a=>`<tr class="${a.on(pf)?'on':''}"><td>${esc(a.name)}${a.avoid?' <span class="pill stop">避免</span>':a.on(pf)?' <span class="pill go">適用</span>':''}</td><td>${esc(a.who)}</td><td class="small">${esc(a.ev)}</td></tr>`).join('');
+}
+
+/* ---------- 3. obstructive ---------- */
+const O={kind:'copd',rr:'18',vt:'480',flow:'50',peep:'5',tpeep:'12',ppeak:'42',pplat:'27',trig:false,hypo:false};
+function oUntouch(){$('#o-sample').hidden=true;}
+segBind('#o-kind',v=>{O.kind=v;oUntouch();renderObs();});
+['rr','vt','flow','peep','tpeep','ppeak','pplat'].forEach(k=>$('#o-'+k).addEventListener('input',e=>{O[k]=e.target.value;oUntouch();renderObs();}));
+['trig','hypo'].forEach(k=>$('#o-'+k).addEventListener('change',e=>{O[k]=e.target.checked;oUntouch();renderObs();}));
+function fillObs(){segSet('#o-kind',O.kind);['rr','vt','flow','peep','tpeep','ppeak','pplat'].forEach(k=>$('#o-'+k).value=O[k]);$('#o-trig').checked=O.trig;$('#o-hypo').checked=O.hypo;}
+function renderObs(){
+  const r=VE.obstructive(O), w=pbw(), asthma=O.kind==='asthma';
+  const vtkg=w&&Number(O.vt)>0?Math.round(Number(O.vt)/w*10)/10:null;
+  const ieMin=asthma?4:3;
+  $('#o-tiles').innerHTML=tile('Ti',r.ti,'s','')+tile('Te',r.te,'s',r.te==null?'':r.te<=0?'stop':'')
+    +tile('I:E',r.ie==null?null:`1:${r.ie}`,'',r.ie==null?'':r.ie<2?'stop':r.ie<ieMin?'warn':'ok')
+    +tile('auto-PEEP',r.autoPeep,'cmH₂O',r.autoPeep==null?'':r.autoPeep>=10?'stop':r.autoPeep>=5?'warn':'ok')
+    +tile('VT / PBW',vtkg,'mL/kg',vtkg==null?'':vtkg>8?'stop':vtkg>7?'warn':'ok');
+  $('#o-out').innerHTML=`<h3 style="margin-bottom:10px">${asthma?'重度氣喘':'COPD'}：處置順序</h3>
+    ${r.alerts.length?`<div class="alerts">${r.alerts.map(alertHtml).join('')}</div>`:'<div class="alert go"><strong>呼氣時間與壓力在可接受範圍</strong><span class="small">持續量 total PEEP 與 Pplat，尤其在調整 RR 或支氣管擴張劑效果變化時。</span></div>'}
+    <div class="act" style="margin-top:12px">${r.actions.map(optHtml).join('')}</div>
+    <p class="small muted" style="margin-top:12px">Te 以方波流速估算：Ti = VT ÷ 流速，Te = 60/RR − Ti。減速波或 PC 時請直接讀呼吸器顯示的 Ti。量 total PEEP 時病人須無自主呼吸（呼氣末暫停 ≥ 2 秒）。</p>`;
+}
+
+/* ---------- 4. ABG & mechanics ---------- */
+const G={rr:'16',vt:'450',mv:'',ph:'7.28',paco2:'55',tgt:'40',pao2:'68',fio2:'0.5',spo2:'93',ppeak:'30',pplat:'24',peep:'8',flow:'60',mpaw:'14',otgt:'std'};
+const GK=['rr','vt','mv','ph','paco2','tgt','pao2','fio2','spo2','ppeak','pplat','peep','flow','mpaw'];
+function gUntouch(){$('#g-sample').hidden=true;}
+GK.forEach(k=>$('#g-'+k).addEventListener('input',e=>{G[k]=e.target.value;gUntouch();renderAbg();}));
+segBind('#g-otgt',v=>{G.otgt=v;gUntouch();renderAbg();});
+function fillAbg(){GK.forEach(k=>$('#g-'+k).value=G[k]);segSet('#g-otgt',G.otgt);}
+function renderAbg(){
+  const w=pbw();
+  const m=VE.mechanics({pbw:w,...G});
+  const sev=m.pf==null?'':m.pf<=100?'stop':m.pf<=200?'warn':m.pf<=300?'warn':'ok';
+  $('#g-tiles').innerHTML=
+    tile('VT / PBW',m.vtkg,'mL/kg',m.vtkg==null?'':m.vtkg>8?'stop':m.vtkg>6.5?'warn':'ok')
+    +tile('分鐘通氣',m.mv,'L/min','')
+    +tile('P/F',m.pf,'',sev)
+    +tile('S/F',m.sf,'',m.sf==null?'':m.sf<=315?'warn':'ok','SpO₂ ≤ 97% 才有效')
+    +tile('驅動壓',m.dp,'cmH₂O',m.dp==null?'':m.dp>15?'warn':'ok','目標 ≤ 15')
+    +tile('靜態順應性',m.cstat,'mL/cmH₂O',m.cstat==null?'':m.cstat<30?'warn':'','正常 50–100')
+    +tile('氣道阻力',m.raw,'cmH₂O/L/s',m.raw==null?'':m.raw>15?'warn':'ok','插管常 < 15')
+    +tile('機械功率',m.mp,'J/min',m.mp==null?'':m.mp>17?'warn':'ok','> 17 與死亡率相關')
+    +tile('通氣比 VR',m.vr,'',m.vr==null?'':m.vr>2?'warn':'ok','正常約 1')
+    +tile('氧合指數 OI',m.oi,'',m.oi==null?'':m.oi>=25?'stop':m.oi>=16?'warn':'ok','FiO₂ × MAP × 100 ÷ PaO₂');
+  const a=VE.abgAdjust({pbw:w,rr:G.rr,vt:G.vt,paco2:G.paco2,target:G.tgt,ph:G.ph,spo2:G.spo2,fio2:G.fio2,peep:G.peep,otgt:G.otgt,obstructive:G.otgt==='copd'});
+  let ph='';
+  const pH=Number(G.ph),pc=Number(G.paco2);
+  if(G.ph!==''&&G.paco2!==''&&pH>6.8&&pH<7.8&&pc>10){
+    const h=Math.round(VE.hco3Of(pH,pc)*10)/10;
+    const kind=pH<7.35?(pc>45?'呼吸性酸中毒':'代謝性酸中毒'):pH>7.45?(pc<35?'呼吸性鹼中毒':'代謝性鹼中毒'):'pH 正常';
+    ph=`<p class="small muted">估算 HCO₃⁻ ${h} mmol/L（Henderson–Hasselbalch）；主要為${kind}${pH<7.35&&pc>45&&h<22?'，合併代謝性酸中毒':''}。以實際血氣機 HCO₃⁻ 為準。</p>`;
+  }
+  $('#g-out').innerHTML=`<h3 style="margin-bottom:8px">調整建議</h3>${ph}
+    <div class="sub-h">通氣（CO₂）</div><div class="act">${a.vent.map(optHtml).join('')}</div>
+    <div class="sub-h">氧合</div><div class="act">${a.oxy.map(optHtml).join('')}</div>
+    <p class="small muted" style="margin-top:12px">一次只改一個主要參數，記錄改變前後的血氣與力學。COPD 病人目標 PaCO₂ 請填平常值。</p>`;
+}
+
+/* ---------- 5. troubleshooting ---------- */
+const T={ppeak:'45',pplat:'23',peep:'8',tpeep:''};
+['ppeak','pplat','peep','tpeep'].forEach(k=>{$('#t-'+k).value=T[k];$('#t-'+k).addEventListener('input',e=>{T[k]=e.target.value;$('#t-sample').hidden=true;renderTrbl();});});
+const PATTERN={
+  resistive:['warn','阻力型：Ppeak 高、Pplat 正常','管路扭折或咬管 → 牙咬器；分泌物或黏液栓 → 抽痰；支氣管痙攣 → 支氣管擴張劑；氣管內管太細或部分阻塞；管路積水；吸氣流速過高。'],
+  elastic:['stop','彈性型：Pplat 或驅動壓高','主支氣管插管、氣胸、肺塌陷或黏液栓造成的肺葉塌陷、肺水腫或 ARDS 惡化、動態過度膨脹（量 total PEEP）、腹內壓上升、胸壁僵硬或燒傷焦痂、病人用力呼氣對抗。'],
+  both:['stop','兩者皆高','同時找阻力與順應性的原因；突然發生時先依左側 DOPE 處理，特別注意張力性氣胸與 auto-PEEP。'],
+  normal:['go','Ppeak − Pplat 與驅動壓都不高','若警報仍響，確認高壓警報上限設定、病人咳嗽或對抗呼吸器。'],
+};
+function renderTrbl(){
+  const r=VE.pressure(T);
+  let h='';
+  if(r.pattern==='noplat')h=alertHtml(['warn','需要 Pplat','吸氣末暫停 0.5–1 秒量 Pplat，病人須無自主呼吸用力。']);
+  else if(r.pattern==='invalid')h=alertHtml(['warn','數值不合理','Pplat 不應高於 Ppeak，請重新量測。']);
+  else if(r.pattern){
+    h=`<div class="tiles" style="margin-bottom:10px">${tile('Ppeak − Pplat',r.grad,'cmH₂O',r.grad>=10?'warn':'ok')}${tile('驅動壓',r.dp,'cmH₂O',r.dp==null?'':r.dp>15?'warn':'ok')}${r.autoPeep!=null?tile('auto-PEEP',r.autoPeep,'cmH₂O',r.autoPeep>=5?'warn':'ok'):''}</div>`+alertHtml(PATTERN[r.pattern]);
+    if(r.autoPeep!=null&&r.autoPeep>=5)h+=`<div style="margin-top:8px">${alertHtml(['warn','有 auto-PEEP','延長呼氣時間（第 3 頁）；驅動壓以 total PEEP 計算。'])}</div>`;
+  } else h='<p class="small muted">輸入 Ppeak 與 Pplat。</p>';
+  $('#t-out').innerHTML=h;
+}
+const ASYN=[
+  ['無效觸發','呼氣流量曲線出現凹陷、壓力小幅下降，但沒有送氣','auto-PEEP、支持過度（VT 或 PS 太大）、呼吸肌無力、觸發太鈍','降 RR 或 VT／PS 以延長呼氣；COPD 可外加 PEEP 約 auto-PEEP 的 80%；改 flow trigger 並調敏感'],
+  ['雙重觸發','兩口氣連在一起，中間沒有完整呼氣','呼吸驅動強、設定 Ti 短於病人的神經吸氣時間、VT 不足','在肺保護限制內延長 Ti 或增加 VT；處理疼痛、焦慮、酸血症；ARDS 中會讓實際 VT 加倍，必要時加深鎮靜或短期肌鬆'],
+  ['反向觸發','機器送氣後才引發病人吸氣，節律固定','深鎮靜，常見於 ARDS','調整鎮靜深度、改變 RR 或 Ti；注意造成的疊加呼吸'],
+  ['流量不足','VC 時吸氣期壓力曲線下凹（向內凹陷）','病人吸氣需求大於設定流速','提高流速或改減速波；改 PC 或自適應模式；處理呼吸驅動'],
+  ['提早循環','送氣結束後病人仍在吸氣，常接著雙重觸發','Ti 太短、PSV 時 cycle-off 百分比太高','延長 Ti；PSV 時降低 cycle-off（例如 25% → 15%）'],
+  ['延遲循環','PSV 時吸氣末出現壓力尖峰，病人主動呼氣','COPD 流量下降慢、PS 太高','提高 cycle-off（25% → 40–50%）；降低 PS；改用有設定 Ti 的模式'],
+  ['自動觸發','沒有病人用力卻送氣，RR 異常高','管路漏氣、積水、心跳振動、觸發過度敏感','修補漏氣、排水；觸發敏感度調鈍；確認不是真正的呼吸驅動（如腦死評估前）'],
+];
+$('#t-asyn').innerHTML=ASYN.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join('');
+
+/* ---------- 6. modes & cases ---------- */
+const MODES=[
+  ['VC-A/C','設定 VT 與流速；病人觸發或時間觸發，容積循環','VT、最低分鐘通氣','可觸發，每口都給設定 VT','需要可靠 VT 與分鐘通氣；ARDS 監測 Pplat 最直接','壓力隨力學變；流量不足；高驅動時雙重觸發'],
+  ['PC-A/C','設定吸氣壓與 Ti；時間循環','吸氣壓上限、最低 RR','可觸發，流速隨病人需求變','需要限制吸氣壓、流量需求大','VT 隨順應性與病人用力變，用力大時 VT 可能過大'],
+  ['PRVC／VC+','壓力型送氣，機器逐口調整壓力以達目標 VT','目標 VT（平均）','可觸發','兼顧壓力型流速與 VT 目標','病人用力大時機器反而降低支持；不同廠牌演算法不同'],
+  ['SIMV + PS','設定強制呼吸數，其間自主呼吸給 PS','強制呼吸部分','自主呼吸與強制呼吸混合','部分支持；現在較少作為脫離模式','脫離較 PSV 或 SBT 慢；呼吸功可能增加'],
+  ['PSV','病人觸發，每口給設定支持壓，流量下降到 cycle-off 時結束','無（依備援設定）','必須有可靠自主呼吸','支持需求低、準備脫離','窒息、疲勞；VT 與分鐘通氣隨病人變；COPD 延遲循環'],
+  ['CPAP','只提供持續正壓','無','完全自主','SBT、評估自主呼吸能力','無通氣支持'],
+  ['APRV','長時間高壓 Phigh 與短暫釋放 Plow','依設定','任何時間都可自主呼吸','部分中心用於難治性低血氧（需熟悉者）','釋放時間設定影響 VT 與肺泡塌陷；不應視為 ARDS 常規'],
+  ['NIV（Bilevel）','IPAP／EPAP，經面罩','依設定','需清醒、能保護氣道','COPD 高碳酸血症、心因性肺水腫、特定術後與免疫低下','氣道保護、分泌物、吸入、漏氣；延誤插管'],
+];
+$('#m-tbl').innerHTML=MODES.map(r=>`<tr><td><b>${esc(r[0])}</b></td>${r.slice(1).map(c=>`<td class="small">${esc(c)}</td>`).join('')}</tr>`).join('');
+const CASES=[
+  {t:'重度 ARDS',s:'65 歲男性肺炎，插管後深鎮靜，FiO₂ 0.8、PEEP 12，P/F 85，VT 500 mL（PBW 66 kg），Pplat 33。下一步最優先？',o:['改成 PC 讓 Ppeak 降低','VT 降到約 400 mL（6 mL/kg），RR 上調，並安排俯臥','改 APRV','先做 40 cmH₂O 持續 40 秒肺泡擴張'],a:1,x:'VT 7.6 mL/kg 且 Pplat > 30，先回到 6 mL/kg 並上調 RR。P/F < 150 符合俯臥條件（≥ 16 小時）。換模式不會改變肺保護目標；長時間高壓擴張術 ATS 2024 強烈反對。'},
+  {t:'COPD 合併明顯 auto-PEEP',s:'COPD 插管後 RR 22、VT 500、流速 45 L/min，total PEEP 14（設定 5），血壓 85/50。',o:['提高 PEEP 到 14 抵銷 auto-PEEP','降低 RR、提高流速，必要時斷開管路讓肺排氣','加快 RR 讓 PaCO₂ 正常','改 PSV'],a:1,x:'動態過度膨脹造成低血壓。延長呼氣：先降 RR（效果最大），再提高流速與降 VT；血壓差時斷開管路 30–60 秒。被動通氣時外加 PEEP 不會減少過度膨脹。'},
+  {t:'重度氣喘',s:'氣喘插管後 Ppeak 55、Pplat 24、auto-PEEP 6，pH 7.22、PaCO₂ 70。',o:['Ppeak 太高，立即降 VT 到 4 mL/kg','Pplat 與 auto-PEEP 可接受，維持低 RR 並容許高碳酸血症','RR 加到 28 降 PaCO₂','改 PC 讓 Ppeak 降到 30'],a:1,x:'Ppeak − Pplat 31 主要是氣道阻力，不是肺泡壓。Pplat < 30、auto-PEEP < 10–15、pH ≥ 7.20 皆在可接受範圍，加 RR 反而加重過度膨脹。'},
+  {t:'術後甦醒',s:'腹部手術後，已清醒、能遵從指令，FiO₂ 0.35、PEEP 5，血流動力學穩定。',o:['維持 A/C 到隔天','進行 SBT（PSV 5–8／CPAP 或 T-piece）評估拔管','改 SIMV 慢慢減 RR','加深鎮靜等傷口不痛'],a:1,x:'符合 SBT 條件就做，不需要 SIMV 漸進。詳見呼吸器脫離導航。'},
+  {t:'神經肌肉無力',s:'GBS 病人 SpO₂ 97%（room air），肺活量 12 mL/kg，PaCO₂ 48。',o:['血氧正常，持續觀察','已達插管或通氣支持條件，評估氣道保護後給予支持','給氧氣面罩','只看 SpO₂ 即可'],a:1,x:'肺活量 < 15–20 mL/kg 與 PaCO₂ 上升代表呼吸肌衰竭；血氧正常不代表通氣足夠。延髓肌無力、無法保護氣道時 NIV 不適合。'},
+  {t:'重度代謝性酸中毒',s:'DKA，pH 6.95、HCO₃⁻ 5、PaCO₂ 18，意識變差需插管。',o:['設定 RR 14、VT 6 mL/kg 即可','以高分鐘通氣（RR 28–35、VT 約 8 mL/kg）維持 PaCO₂ 約 15–18，15–20 分鐘複驗','讓 PaCO₂ 回到 40','插管後先手壓 5 分鐘再接機器'],a:1,x:'Winter 公式預期 PaCO₂ = 1.5 × 5 + 8 = 15.5。設定 RR 14 會讓 PaCO₂ 迅速上升而使 pH 崩落。'},
+  {t:'心因性肺水腫',s:'急性心衰竭肺水腫，清醒、可配合，SpO₂ 86%（NRM），RR 34。',o:['立即插管','CPAP 或 Bilevel NIV，同時治療心衰竭並監測 1–2 小時內反應','HFNC 50 L/min 後觀察一天','只給利尿劑'],a:1,x:'ERS/ATS 2017 強建議心因性肺水腫使用 CPAP 或 Bilevel。若意識變差、休克或 NIV 無改善，則插管。'},
+  {t:'準備 SBT',s:'肺炎改善，FiO₂ 0.35、PEEP 6，無升壓劑，RSBI 85，有咳嗽。',o:['RSBI 未 < 50，不能做 SBT','可以做 SBT；RSBI 只是參考，不是唯一關卡','先做 SIMV','再等 3 天'],a:1,x:'RSBI < 105 為傳統門檻，且不應作為唯一條件；符合 readiness 就做 SBT。'},
+  {t:'Ppeak 高、Pplat 正常',s:'VC 時 Ppeak 從 28 升到 46，Pplat 22（原 21），SpO₂ 穩定。',o:['改 PC 降低警報','找阻力原因：抽痰、咬管、支氣管痙攣、管路積水','降 PEEP','增加 VT'],a:1,x:'Ppeak − Pplat 由 7 增為 24，屬阻力型。改模式只會把問題藏起來（PC 時表現為 VT 下降）。'},
+  {t:'雙重觸發',s:'ARDS 病人 VC-A/C，VT 6 mL/kg、Ti 0.6 s，頻繁雙重觸發，實際送出的 VT 常到 12 mL/kg。',o:['忽略','找原因：延長 Ti、處理疼痛與酸血症；仍持續則加深鎮靜或短期肌鬆','改 PSV','增加 VT 到 10 mL/kg'],a:1,x:'雙重觸發讓肺保護失效（疊加呼吸）。先調 Ti 與處理驅動，再考慮鎮靜或肌鬆。'},
+];
+let qi=0;const qAns={};
+function renderQuiz(){
+  $('#q-nav').innerHTML=CASES.map((c,i)=>`<button class="btn" aria-current="${i===qi}" data-i="${i}" title="${esc(c.t)}">${i+1}</button>`).join('');
+  $$('#q-nav button').forEach(b=>b.addEventListener('click',()=>{qi=+b.dataset.i;renderQuiz();}));
+  const c=CASES[qi],ans=qAns[qi];
+  $('#q-body').innerHTML=`<div class="eyebrow">案例 ${qi+1}／${CASES.length}</div><h4 style="font-size:16px;margin-top:2px">${esc(c.t)}</h4><p style="margin-top:6px">${esc(c.s)}</p>
+    <div class="opts">${c.o.map((o,i)=>`<button data-i="${i}" class="${ans==null?'':i===c.a?'right':i===ans?'wrong':''}">${String.fromCharCode(65+i)}. ${esc(o)}</button>`).join('')}</div>
+    ${ans!=null?`<div class="alert ${ans===c.a?'go':'warn'}" style="margin-top:10px"><strong>${ans===c.a?'正確':'建議答案：'+String.fromCharCode(65+c.a)}</strong><span class="small">${esc(c.x)}</span></div>`:''}
+    <div class="row" style="margin-top:10px"><button class="btn" id="q-prev" ${qi===0?'disabled':''}>上一題</button><button class="btn" id="q-next" ${qi===CASES.length-1?'disabled':''}>下一題</button></div>`;
+  $$('#q-body .opts button').forEach(b=>b.addEventListener('click',()=>{qAns[qi]=+b.dataset.i;renderQuiz();}));
+  $('#q-prev').addEventListener('click',()=>{qi--;renderQuiz();});
+  $('#q-next').addEventListener('click',()=>{qi++;renderQuiz();});
+}
+
+/* ---------- boot ---------- */
+function renderAll(){renderPt();renderInit();renderArds();renderObs();renderAbg();}
+fillArds();fillObs();fillAbg();renderAll();renderTrbl();renderQuiz();
+let start='init';try{start=localStorage.getItem('vent-tab')||'init';}catch(e){}
+showTab(start);
+})();
+</script>
+</body>
+</html>

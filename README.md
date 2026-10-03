@@ -1,108 +1,46 @@
-# vinext-starter
+# 呼吸器設定導航
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+繁體中文的成人侵入性呼吸器決策輔助工具。依臨床情境給起始設定，並涵蓋 ARDS 肺保護、阻塞性疾病、血氣與力學調整、疑難排解。單一靜態網頁，部署於 GitHub Pages：<https://yht5582-source.github.io/ventilator-navigator/>
 
-## Prerequisites
+> 本工具用於臨床教育與決策輔助，所有數值皆為起始建議，需依床邊評估、波形、血氣與病人反應調整，不能取代醫師與呼吸治療師的判斷。
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+## 分頁
 
-## Sites Lifecycle
+1. **起始設定**：七種情境（肺部大致正常、ARDS、COPD 急性惡化、重度氣喘、重度代謝性酸中毒、急性腦傷、神經肌肉無力），依 PBW 算出 VT，並列出模式、RR、PEEP、FiO₂、流速、目標與接上後第一小時的檢查。代謝性酸中毒以 Winter 公式算預期 PaCO₂；勾選休克時會加上循環警示。可複製設定摘要。
+2. **ARDS 肺保護**
+   - 2024 全球定義：插管（P/F 或 S/F 分級）與非插管（HFNC ≥ 30 L/min 或 NIV/CPAP ≥ 5），同時對照 Berlin 分級。
+   - ARDSNet 較低／較高 PEEP/FiO₂ 表，依 FiO₂ 標示對應 PEEP。
+   - VT／Pplat／pH 調整：Pplat > 30 降 VT 1 mL/kg（最低 4）、VT > 6 逐步下調、pH 7.15–7.30 上調 RR（最高 35，依 Henderson–Hasselbalch 粗估目標 RR）、pH < 7.15 的處置、驅動壓 > 15 提示。
+   - 輔助治療階梯（ATS 2017／2024、ESICM 2023）：俯臥、較高 PEEP、肌鬆、類固醇、VV-ECMO（EOLIA 條件）、避免長時間肺泡擴張術與 HFOV。
+3. **阻塞性疾病**：以 RR、VT、流速估算 Ti、Te、I:E 與 auto-PEEP，依序列出降 RR、提高流速、降 VT、治療阻塞；COPD 自行觸發時外加 PEEP 約 auto-PEEP 的 80%；插管後低血壓先斷開管路。
+4. **血氣與力學調整**：VT/PBW、MV、P/F、S/F、驅動壓、靜態順應性、氣道阻力、機械功率、通氣比、氧合指數；依目標 PaCO₂ 調 RR，依 SpO₂ 目標調 FiO₂／PEEP。
+5. **疑難排解**：急性去飽和的 DOPE 流程、高氣道壓阻力型與彈性型判讀、七種人機不同步的波形與處置。
+6. **模式與案例**：常用模式比較表，與 10 個案例練習題。
+7. **文獻**
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
+## 檔案
 
-This starter does not use `wrangler.jsonc`.
-
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout and then validates the Sites artifact. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
-
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```text
+.
+├── index.html   # 頁面與計算 engine（/*ENGINE-START*/ … /*ENGINE-END*/）
+├── tests.cjs    # 規則測試
+├── README.md
+└── .nojekyll
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## 測試
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+```bash
+node tests.cjs
+```
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+## 主要依據
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+- Fan E, et al. ATS/ESICM/SCCM guideline: mechanical ventilation in adult ARDS. *AJRCCM* 2017;195:1253–1263.
+- Qadir N, et al. ATS clinical practice guideline update on ARDS. *AJRCCM* 2024;209:24–36.
+- Grasselli G, et al. ESICM guidelines on ARDS. *Intensive Care Med* 2023;49:727–759.
+- Matthay MA, et al. A new global definition of ARDS. *AJRCCM* 2024;209:37–47.
+- NHLBI ARDS Network ventilator protocol.
+- Rochwerg B, et al. ERS/ATS NIV guideline. *Eur Respir J* 2017;50:1602426.
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Diagnostic Commands
-
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build and validate the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build, validate, and verify the rendered development-preview metadata
-- `npm run validate:artifact`: recheck an existing artifact's manifest and ESM `default.fetch` export
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-Use build and validation commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
-
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+前一版為 Next.js（vinext）應用，已於 2026-10-03 改寫為單一靜態頁面；舊版原始碼保留在 git 歷史中。
